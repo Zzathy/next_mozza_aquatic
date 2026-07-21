@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  products Product[]
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  slug String @unique
+  categoryId Int
+  description String? @db.Text
+  price Int @default(0)
+  minStock Int @default(0)
+  isActive Boolean @default(true)
+  isService Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id])
+  purchaseItems PurchaseItem[]
+  saleItems SaleItem[]
+}
+
+model Purchase {
+  id Int @id @default(autoincrement())
+  supplierName String?
+  supplierPhone String?
+  entryDate DateTime @default(now())
+  notes String? @db.Text
+  totalAmount Int @default(0)
+  discount Int @default(0)
+  finalAmount Int @default(0)
+  paymentStatus String @default("Lunas")
+  paidAmount Int @default(0)
+  dueAmount Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  purchaseItems PurchaseItem[]
+}
+
+model PurchaseItem {
+  id Int @id @default(autoincrement())
+  productId Int
+  purchaseId Int
+  initialStock Int @default(0)
+  remainingStock Int @default(0)
+  buyPrice Int @default(0)
+  expiredDate DateTime? @db.Date
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+  purchase Purchase @relation(fields: [purchaseId], references: [id])
+}
+
+model Sale{
+  id Int @id @default(autoincrement())
+  invoiceNumber String @unique
+  customerName String?
+  customerPhone String?
+  totalAmount Int @default(0)
+  discount Int @default(0)
+  finalAmount Int @default(0)
+  paymentStatus String @default("Lunas")
+  paidAmount Int @default(0)
+  dueAmount Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  saleItems SaleItem[]
+}
+
+model SaleItem {
+  id Int @id @default(autoincrement())
+  saleId Int
+  productId Int
+  quantity Int @default(0)
+  costPrice Int @default(0)
+  unitPrice Int @default(0)
+  subTotal Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sale Sale @relation(fields: [saleId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  type String @default("Pengeluaran")
+  category String
+  amount Int @default(0)
+  description String? @db.Text
+  transactionDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  role String @default("Kasir")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,10 +1,24 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+
+const dbUrl = new URL(process.env.DATABASE_URL as string);
+
+const adapter = new PrismaMariaDb({
+  host: dbUrl.hostname,
+  port: Number(dbUrl.port) || 3306,
+  user: dbUrl.username,
+  password: dbUrl.password,
+  database: dbUrl.pathname.substring(1),
+});
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient;
 };
 
-// Gak perlu masukin password dll di sini, Prisma otomatis baca DATABASE_URL dari .env
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    adapter,
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

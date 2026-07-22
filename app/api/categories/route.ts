@@ -14,3 +14,28 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { name } = body;
+
+    if (!name) {
+      return NextResponse.json(
+        { success: false, message: "Nama kategori harus diisi" },
+        { status: 400 },
+      );
+    }
+
+    const newCategory = await prisma.category.create({
+      data: { name },
+    });
+
+    return NextResponse.json({ success: true, data: newCategory });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: "Gagal buat kategori" },
+      { status: 500 },
+    );
+  }
+}

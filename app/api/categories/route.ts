@@ -27,8 +27,13 @@ export async function POST(request: Request) {
       );
     }
 
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
     const newCategory = await prisma.category.create({
-      data: { name },
+      data: { name, slug },
     });
 
     return NextResponse.json({ success: true, data: newCategory });

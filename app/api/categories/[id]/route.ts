@@ -17,9 +17,14 @@ export async function PUT(
       );
     }
 
+    const newSlug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
     const updatedCategory = await prisma.category.update({
       where: { id: parseInt(id) },
-      data: { name },
+      data: { name, slug: newSlug },
     });
 
     return NextResponse.json({ success: true, data: updatedCategory });

@@ -75,6 +75,7 @@ model Sale{
   invoiceNumber String @unique
   customerName String?
   customerPhone String?
+  notes String? @db.Text
   totalAmount Int @default(0)
   discount Int @default(0)
   finalAmount Int @default(0)

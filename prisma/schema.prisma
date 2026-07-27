@@ -33,6 +33,7 @@ model Product {
   updatedAt DateTime @updatedAt
 
   category Category @relation(fields: [categoryId], references: [id])
+  damageLogs DamageLog[]
   purchaseItems PurchaseItem[]
   saleItems SaleItem[]
 }
@@ -113,7 +114,23 @@ model Expense {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  damageLog DamageLog?
   @@index([category])
+}
+
+model DamageLog {
+  id Int @id @default(autoincrement())
+  productId Int
+  quantity Int
+  status String @default("Rusak")
+  totalCost Int
+  notes String?
+  expenseId Int? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+  expense Expense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
 }
 
 model User {

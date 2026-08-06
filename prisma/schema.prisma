@@ -106,7 +106,6 @@ model SaleItem {
 
 model Expense {
   id Int @id @default(autoincrement())
-  type String @default("Pengeluaran")
   category String
   amount Int @default(0)
   description String? @db.Text

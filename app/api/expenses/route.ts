@@ -31,13 +31,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const {
-      type = "Pengeluaran",
-      category,
-      amount,
-      description,
-      transactionDate,
-    } = body;
+    const { category, amount, description, transactionDate } = body;
 
     if (!category || amount === undefined) {
       return NextResponse.json(
@@ -48,7 +42,6 @@ export async function POST(req: Request) {
 
     const expense = await prisma.expense.create({
       data: {
-        type,
         category,
         amount: Number(amount),
         description,

@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,29 +46,28 @@ export default function ExpensePage() {
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
+  const fetchExpensesAPI = async () => {
+    const res = await fetch("/api/expenses");
+    if (!res.ok) throw new Error("Gagal ambil data");
+    const json = await res.json();
+    return json.data || [];
+  };
+
   const refreshData = async () => {
     try {
-      const res = await fetch("/api/expenses");
-      if (!res.ok) throw new Error("Gagal ambil data");
-      const json = await res.json();
-      setExpenses(json.data);
+      const data = await fetchExpensesAPI();
+      setExpenses(data);
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
-    fetch("/api/expenses")
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal ambil data");
-        return res.json();
+    fetchExpensesAPI()
+      .then((data) => {
+        setExpenses(data);
       })
-      .then((json) => {
-        setExpenses(json.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch((err) => console.error(err));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

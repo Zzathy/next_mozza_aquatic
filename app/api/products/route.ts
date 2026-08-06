@@ -5,6 +5,7 @@ export async function GET() {
   try {
     const products = await prisma.product.findMany({
       orderBy: { id: "desc" },
+      include: { category: true },
     });
     return NextResponse.json({ success: true, data: products });
   } catch (error) {

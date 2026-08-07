@@ -104,7 +104,7 @@ export default function ProductPage() {
         setCategories(data);
       })
       .catch((err) => console.error(err));
-  });
+  }, []);
 
   const resetForm = () => {
     setEditingProductId(null);

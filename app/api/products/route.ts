@@ -1,14 +1,38 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
   try {
     const products = await prisma.product.findMany({
       orderBy: { id: "desc" },
-      include: { category: true },
+      include: {
+        category: true,
+        purchaseItems: {
+          where: { remainingStock: { gt: 0 } },
+          select: { remainingStock: true },
+        },
+      },
     });
-    return NextResponse.json({ success: true, data: products });
+
+    const data = products.map((product) => {
+      const currentStock = product.isService
+        ? 999
+        : (product.purchaseItems || []).reduce(
+            (sum, item) => sum + item.remainingStock,
+            0,
+          );
+
+      return {
+        ...product,
+        stock: currentStock,
+      };
+    });
+
+    return NextResponse.json({ success: true, data: data });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { success: false, message: "Gagal ambil data" },
       { status: 500 },

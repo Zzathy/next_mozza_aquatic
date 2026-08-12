@@ -68,7 +68,6 @@ export async function POST(req: Request) {
 
       const expense = await tx.expense.create({
         data: {
-          type: "Pengeluaran",
           category: "Kerugian Stok",
           amount: totalLossCost,
           description: `Kerugian Stok: ${notes || "Barang Rusak/Mati"}`,
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
         data: {
           productId: Number(productId),
           quantity: qtyToDeduct,
-          status: "RUSAK",
+          status: "Rusak",
           totalCost: totalLossCost,
           notes: notes || null,
           expenseId: expense.id,

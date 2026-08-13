@@ -10,7 +10,10 @@ export default withAuth(
       return NextResponse.redirect(new URL("/dashboard/kasir", req.url));
     }
 
-    if (path.startsWith("/dashboard/settings") && token?.role !== "Superadmin") {
+    if (
+      path.startsWith("/dashboard/settings") &&
+      token?.role !== "Superadmin"
+    ) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
@@ -18,17 +21,20 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token, 
+      authorized: ({ token }) => !!token,
     },
-  }
+    pages: {
+      signIn: "/login",
+    },
+  },
 );
 
 export const config = {
   matcher: [
-    "/dashboard/:path*", 
-    
+    "/dashboard/:path*",
+
     "/api/dashboard/:path*",
     "/api/products/:path*",
-    "/api/damage-logs/:path*"
+    "/api/damage-logs/:path*",
   ],
 };

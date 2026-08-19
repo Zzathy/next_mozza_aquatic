@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ReceiptPrint, { ReceiptData } from "@/components/ReceiptPrint";
 
 interface Product {
   id: number;
@@ -39,6 +40,8 @@ export default function CashierPage() {
   const [notes, setNotes] = useState("");
   const [discount, setDiscount] = useState("0");
   const [paidAmount, setPaidAmount] = useState("0");
+
+  const [activeReceipt, setActiveReceipt] = useState<ReceiptData | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -160,6 +163,28 @@ export default function CashierPage() {
 
       alert("Transaksi Berhasil Disimpan!");
 
+      const receiptPayload: ReceiptData = {
+        invoice: data.data?.invoice || "MIG-S-PENDING",
+        date: new Date().toLocaleString("id-ID"),
+        customer: customerName || null,
+        items: cart.map((c) => ({
+          name: c.product.name,
+          qty: c.quantity,
+          price: c.product.price,
+          subTotal: c.product.price * c.quantity,
+        })),
+        total: finalAmount,
+        paid: Number(paidAmount),
+        change: kembalian,
+        notes: notes || null,
+      };
+
+      setActiveReceipt(receiptPayload);
+
+      setTimeout(() => {
+        window.print();
+      }, 100);
+
       const resProducts = await fetch("/api/products");
       const jsonProducts = await resProducts.json();
       setProducts(jsonProducts.data || []);
@@ -183,7 +208,7 @@ export default function CashierPage() {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] bg-gray-50 overflow-hidden">
-      <div className="flex-1 flex flex-col p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col p-4 overflow-hidden print:hidden">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-800">Kasir Mozza</h1>
           <div className="relative w-64">
@@ -248,8 +273,7 @@ export default function CashierPage() {
         </div>
       </div>
 
-      {/* KANAN: KERANJANG (CART) */}
-      <div className="w-96 bg-white border-l shadow-xl flex flex-col z-10">
+      <div className="w-96 bg-white border-l shadow-xl flex flex-col z-10 print:hidden">
         <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
           <h2 className="font-bold flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" /> Pesanan Saat Ini
@@ -388,6 +412,7 @@ export default function CashierPage() {
           </Button>
         </div>
       </div>
+      <ReceiptPrint data={activeReceipt} />
     </div>
   );
 }

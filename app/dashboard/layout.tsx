@@ -33,9 +33,10 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r shadow-sm flex flex-col justify-between">
+    // Tambahin: print:h-auto print:bg-white
+    <div className="flex h-screen bg-gray-50 overflow-hidden print:h-auto print:bg-white">
+      {/* SIDEBAR - Tambahin: print:hidden */}
+      <aside className="w-64 bg-white border-r shadow-sm flex flex-col justify-between print:hidden">
         <div>
           {/* Logo / Brand */}
           <div className="h-16 flex items-center px-6 border-b">
@@ -79,8 +80,10 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* KONTEN UTAMA (Children) */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      {/* KONTEN UTAMA (Children) - Tambahin: print:overflow-visible */}
+      <main className="flex-1 overflow-y-auto print:overflow-visible">
+        {children}
+      </main>
     </div>
   );
 }

@@ -5,16 +5,18 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
+    const role = token?.role;
 
-    if (path.startsWith("/dashboard/laporan") && token?.role === "Pegawai") {
-      return NextResponse.redirect(new URL("/dashboard/kasir", req.url));
-    }
+    if (role === "Pegawai") {
+      const isAllowed =
+        path.startsWith("/dashboard/kasir") ||
+        path.startsWith("/dashboard/penjualan") ||
+        path.startsWith("/dashboard/kerusakan");
+      path === "/dashboard";
 
-    if (
-      path.startsWith("/dashboard/settings") &&
-      token?.role !== "Superadmin"
-    ) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      if (!isAllowed) {
+        return NextResponse.redirect(new URL("/dashboard/kasir", req.url));
+      }
     }
 
     return NextResponse.next();
@@ -30,11 +32,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-
-    "/api/dashboard/:path*",
-    "/api/products/:path*",
-    "/api/damage-logs/:path*",
-  ],
+  matcher: ["/dashboard/:path*"],
 };

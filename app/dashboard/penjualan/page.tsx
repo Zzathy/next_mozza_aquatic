@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Trash2, Eye, FileText, AlertCircle } from "lucide-react";
+import {
+  Search,
+  Trash2,
+  Eye,
+  FileText,
+  AlertCircle,
+  FileDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -136,15 +143,26 @@ export default function SalesPage() {
           </p>
         </div>
 
-        <div className="relative w-72">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Cari No. Nota atau Pelanggan (Enter)"
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearch}
-          />
+        <div className="flex gap-2">
+          <a
+            href="/api/sales/export"
+            target="_blank"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-2 transition-all shadow-sm active:scale-95"
+          >
+            <FileDown className="w-4 h-4" />
+            Export CSV
+          </a>
+
+          <div className="relative w-72">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Cari No. Nota atau Pelanggan (Enter)"
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+            />
+          </div>
         </div>
       </div>
 

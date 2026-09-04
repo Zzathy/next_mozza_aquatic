@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast-context";
 
 interface Product {
   id: number;
@@ -75,6 +76,7 @@ interface PurchaseData {
 }
 
 export default function PurchasePage() {
+  const { success, error: showError } = useToast();
   const [purchases, setPurchases] = useState<PurchaseData[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,7 +202,7 @@ export default function PurchasePage() {
     e.preventDefault();
 
     if (cart.length === 0 || cart.some((item) => !item.productId)) {
-      alert("Pilih minimal 1 produk di keranjang!");
+      showError("Pilih minimal 1 produk di keranjang!");
       return;
     }
 
@@ -238,9 +240,12 @@ export default function PurchasePage() {
 
       setIsModalOpen(false);
       refreshData();
+      success(isEditing ? "Faktur kulakan berhasil diperbarui!" : "Faktur pembelian berhasil disimpan!");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showError(error.message);
+      } else {
+        showError("Gagal memproses data faktur pembelian");
       }
     } finally {
       setIsLoading(false);
@@ -257,9 +262,12 @@ export default function PurchasePage() {
       if (!res.ok) throw new Error(resData.message || "Gagal hapus data");
 
       refreshData();
+      success("Faktur pembelian berhasil dihapus!");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showError(error.message);
+      } else {
+        showError("Gagal menghapus data");
       }
     }
   };

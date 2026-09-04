@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/toast-context";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +57,7 @@ interface Product {
 }
 
 export default function ProductPage() {
+  const { success, error } = useToast();
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -140,9 +142,10 @@ export default function ProductPage() {
       setCategoryId(String(resData.data?.id || ""));
       setNewCategoryName("");
       setIsCategoryModalOpen(false);
-    } catch (error) {
-      console.error(error);
-      alert("Gagal menambah kategori baru!");
+      success("Kategori baru berhasil ditambahkan!");
+    } catch (err) {
+      console.error(err);
+      error("Gagal menambah kategori baru!");
     } finally {
       setIsLoading(false);
     }
@@ -180,12 +183,13 @@ export default function ProductPage() {
       await refreshProducts();
       setIsProductModalOpen(false);
       resetForm();
+      success(editingProductId ? "Data produk berhasil diperbarui!" : "Produk baru berhasil disimpan!");
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {
-        alert(err.message);
+        error(err.message);
       } else {
-        alert("Gagal memproses data produk.");
+        error("Gagal memproses data produk.");
       }
     } finally {
       setIsLoading(false);
@@ -212,9 +216,10 @@ export default function ProductPage() {
 
       if (!response.ok) throw new Error("Gagal hapus produk");
       await refreshProducts();
+      success("Produk berhasil dihapus!");
     } catch (err) {
       console.error(err);
-      alert("Gagal menghapus produk.");
+      error("Gagal menghapus produk.");
     }
   };
 

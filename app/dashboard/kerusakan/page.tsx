@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast-context";
 
 interface Product {
   id: number;
@@ -61,6 +62,7 @@ interface DamageLog {
 }
 
 export default function DamageLogPage() {
+  const { success, error: showError } = useToast();
   const [logs, setLogs] = useState<DamageLog[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,7 +114,7 @@ export default function DamageLogPage() {
       (p) => p.id === Number(selectedProductId),
     );
     if (selectedProduct && Number(quantity) > selectedProduct.stock) {
-      alert(
+      showError(
         `Stok tidak cukup! Sisa stok ${selectedProduct.name} hanya ${selectedProduct.stock}.`,
       );
       return;
@@ -138,8 +140,10 @@ export default function DamageLogPage() {
       setQuantity("");
       setNotes("");
       reloadData();
+      success("Laporan barang rusak berhasil dicatat!");
     } catch (error: unknown) {
-      if (error instanceof Error) alert(error.message);
+      if (error instanceof Error) showError(error.message);
+      else showError("Gagal mencatat barang rusak.");
     } finally {
       setIsSubmitting(false);
     }
@@ -159,8 +163,10 @@ export default function DamageLogPage() {
       if (!res.ok) throw new Error(data.error || "Gagal memperbarui status");
 
       reloadData();
+      success(`Barang ${productName} berhasil diperbaiki & stok dikembalikan!`);
     } catch (error: unknown) {
-      if (error instanceof Error) alert(error.message);
+      if (error instanceof Error) showError(error.message);
+      else showError("Gagal mengubah status kerusakan");
     }
   };
 
@@ -173,8 +179,10 @@ export default function DamageLogPage() {
       if (!res.ok) throw new Error(data.error || "Gagal menghapus log");
 
       reloadData();
+      success("Catatan kerusakan berhasil dihapus!");
     } catch (error: unknown) {
-      if (error instanceof Error) alert(error.message);
+      if (error instanceof Error) showError(error.message);
+      else showError("Gagal menghapus catatan");
     }
   };
 

@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/toast-context";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +48,7 @@ interface Expense {
 }
 
 export default function ExpensePage() {
+  const { success, error: showError } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -107,11 +109,12 @@ export default function ExpensePage() {
       setIsModalOpen(false);
 
       await refreshData();
+      success("Catatan pengeluaran berhasil disimpan!");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showError(error.message);
       } else {
-        alert("Terjadi kesalahan saat menyimpan data");
+        showError("Terjadi kesalahan saat menyimpan data");
       }
     } finally {
       setIsLoading(false);
@@ -132,9 +135,10 @@ export default function ExpensePage() {
       }
 
       await refreshData();
+      success("Catatan pengeluaran berhasil dihapus!");
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan saat menghapus data");
+      showError("Terjadi kesalahan saat menghapus data");
     }
   };
 

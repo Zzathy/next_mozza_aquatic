@@ -36,6 +36,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/toast-context";
 
 interface SaleItem {
   id: number;
@@ -65,6 +66,7 @@ interface Sale {
 }
 
 export default function SalesPage() {
+  const { success, error: showError } = useToast();
   const [sales, setSales] = useState<Sale[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -118,14 +120,16 @@ export default function SalesPage() {
 
       if (!res.ok) throw new Error(data.error || "Gagal membatalkan transaksi");
 
-      alert("Nota berhasil dibatalkan dan stok telah dikembalikan!");
       loadSales(searchQuery);
       if (selectedSale?.id === id) {
         setIsModalOpen(false);
       }
+      success("Nota berhasil dibatalkan dan stok telah dikembalikan!");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showError(error.message);
+      } else {
+        showError("Gagal membatalkan nota transaksi");
       }
     }
   };

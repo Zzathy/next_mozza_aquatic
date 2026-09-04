@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReceiptPrint, { ReceiptData } from "@/components/ReceiptPrint";
+import { useToast } from "@/components/ui/toast-context";
 
 interface Category {
   id: number;
@@ -44,6 +45,7 @@ interface CartItem {
 }
 
 export default function CashierPage() {
+  const { success, error: showError } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -105,7 +107,7 @@ export default function CashierPage() {
 
   const addToCart = (product: Product) => {
     if (!product.isService && product.stock <= 0) {
-      alert("Stok barang ini sudah habis!");
+      showError("Stok barang ini sudah habis!");
       return;
     }
 
@@ -113,7 +115,7 @@ export default function CashierPage() {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
         if (!product.isService && existing.quantity >= product.stock) {
-          alert(`Stok tidak mencukupi! Sisa stok hanya ${product.stock}.`);
+          showError(`Stok tidak mencukupi! Sisa stok hanya ${product.stock}.`);
           return prev;
         }
         return prev.map((item) =>
@@ -138,7 +140,7 @@ export default function CashierPage() {
               delta > 0 &&
               newQty > item.product.stock
             ) {
-              alert(
+              showError(
                 `Stok maksimal ${item.product.name} hanya ${item.product.stock}!`,
               );
               return item;
@@ -161,7 +163,7 @@ export default function CashierPage() {
       prev.map((item) => {
         if (item.product.id === productId) {
           if (!item.product.isService && qty > item.product.stock) {
-            alert(`Maksimal stok tersedia hanya ${item.product.stock}!`);
+            showError(`Maksimal stok tersedia hanya ${item.product.stock}!`);
             return { ...item, quantity: item.product.stock };
           }
           return { ...item, quantity: qty };
@@ -218,7 +220,7 @@ export default function CashierPage() {
 
   const handleCheckout = async () => {
     if (cart.length === 0) {
-      alert("Keranjang masih kosong!");
+      showError("Keranjang masih kosong!");
       return;
     }
 
@@ -281,11 +283,12 @@ export default function CashierPage() {
       setNotes("");
       setDiscount("0");
       setPaidAmount("0");
+      success("Transaksi berhasil diproses & nota dicetak!");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showError(error.message);
       } else {
-        alert("Terjadi kesalahan sistem.");
+        showError("Terjadi kesalahan sistem.");
       }
     } finally {
       setIsLoading(false);

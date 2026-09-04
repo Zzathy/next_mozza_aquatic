@@ -39,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast-context";
 
 interface Product {
   id: number;
@@ -67,6 +68,7 @@ interface RecentMigrationSale {
 }
 
 export default function SalesMigrationPage() {
+  const { success, error: showError } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [recentMigrations, setRecentMigrations] = useState<RecentMigrationSale[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -182,11 +184,11 @@ export default function SalesMigrationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transactionDate) {
-      alert("Pilih tanggal transaksi lama terlebih dahulu!");
+      showError("Pilih tanggal transaksi lama terlebih dahulu!");
       return;
     }
     if (items.some((item) => !item.productId)) {
-      alert("Pastikan semua baris sudah dipilih nama produknya!");
+      showError("Pastikan semua baris sudah dipilih nama produknya!");
       return;
     }
 
@@ -211,7 +213,7 @@ export default function SalesMigrationPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal melakukan migrasi data");
 
-      alert("Transaksi masa lalu berhasil direkam ke Laporan Laba Rugi!");
+      success("Transaksi masa lalu berhasil direkam ke Laporan Laba Rugi!");
 
       // Reset form
       setCustomerName("");
@@ -219,7 +221,8 @@ export default function SalesMigrationPage() {
       setItems([{ productId: "", quantity: 1, buyPrice: 0, sellPrice: 0 }]);
       loadRecentMigrations();
     } catch (error: unknown) {
-      if (error instanceof Error) alert(error.message);
+      if (error instanceof Error) showError(error.message);
+      else showError("Gagal memproses migrasi data");
     } finally {
       setIsLoading(false);
     }

@@ -298,7 +298,7 @@ export default function CashierPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#F3F4F6] text-gray-900 overflow-hidden select-none relative">
+    <div className="flex h-full min-h-0 bg-[#F3F4F6] text-gray-900 overflow-hidden select-none relative">
       {/* AREA KIRI: KATALOG PRODUK */}
       <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-[#F8FAFC] print:hidden h-full">
         {/* TOP BAR HEADER */}

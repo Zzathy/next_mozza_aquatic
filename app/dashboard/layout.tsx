@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import AppSidebar from "@/components/AppSidebar";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 
@@ -65,10 +66,13 @@ export default function DashboardLayout({
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
-        <main className="flex-1 overflow-y-auto print:overflow-visible bg-[#F3F4F6]">
+        {/* PAGE CONTENT WITH SAFE BOTTOM PADDING ON MOBILE FOR BOTTOM NAV */}
+        <main className="flex-1 overflow-y-auto print:overflow-visible bg-[#F3F4F6] pb-20 lg:pb-0">
           {children}
         </main>
+
+        {/* MOBILE BOTTOM NAVIGATION BAR */}
+        <MobileBottomNav onOpenMenu={() => setIsMobileOpen(true)} />
       </div>
     </div>
   );

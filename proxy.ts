@@ -12,7 +12,6 @@ export default withAuth(
         path.startsWith("/dashboard/kasir") ||
         path.startsWith("/dashboard/penjualan") ||
         path.startsWith("/dashboard/kerusakan");
-      path === "/dashboard";
 
       if (!isAllowed) {
         return NextResponse.redirect(new URL("/dashboard/kasir", req.url));

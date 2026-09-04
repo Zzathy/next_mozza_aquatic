@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Search,
   Trash2,
@@ -8,6 +8,16 @@ import {
   FileText,
   AlertCircle,
   FileDown,
+  Receipt,
+  Sparkles,
+  User,
+  Calendar,
+  Wallet,
+  X,
+  Clock,
+  CheckCircle2,
+  Clock3,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +34,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface SaleItem {
@@ -56,20 +67,21 @@ interface Sale {
 export default function SalesPage() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
 
-  const fetchSalesAPI = async (query = "") => {
-    const url = query ? `/api/sales?search=${query}` : "/api/sales";
+  const fetchSalesAPI = useCallback(async (query = "") => {
+    const url = query ? `/api/sales?search=${encodeURIComponent(query)}` : "/api/sales";
     const res = await fetch(url);
     if (!res.ok) throw new Error("Gagal mengambil riwayat transaksi");
     const json = await res.json();
     return json.data || [];
-  };
+  }, []);
 
-  const loadSales = async (query = "") => {
+  const loadSales = useCallback(async (query = "") => {
     setIsLoading(true);
     try {
       const data = await fetchSalesAPI(query);
@@ -79,20 +91,13 @@ export default function SalesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fetchSalesAPI]);
 
   useEffect(() => {
-    fetchSalesAPI()
-      .then((data) => {
-        setSales(data);
-      })
-      .catch(console.error)
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+    loadSales();
+  }, [loadSales]);
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       loadSales(searchQuery);
     }
@@ -101,7 +106,7 @@ export default function SalesPage() {
   const handleVoid = async (id: number, invoice: string) => {
     if (
       !confirm(
-        `HATI-HATI!\nAnda yakin ingin membatalkan nota ${invoice}?\nStok barang akan otomatis dikembalikan.`,
+        `HATI-HATI!\nAnda yakin ingin membatalkan nota ${invoice}?\nStok barang fisik akan otomatis dikembalikan ke inventaris.`,
       )
     ) {
       return;
@@ -115,6 +120,9 @@ export default function SalesPage() {
 
       alert("Nota berhasil dibatalkan dan stok telah dikembalikan!");
       loadSales(searchQuery);
+      if (selectedSale?.id === id) {
+        setIsModalOpen(false);
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         alert(error.message);
@@ -122,77 +130,244 @@ export default function SalesPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const filteredSales = useMemo(() => {
+    return sales.filter((s) => {
+      const matchStatus =
+        statusFilter === "all" ||
+        s.paymentStatus.toLowerCase() === statusFilter.toLowerCase();
+      const matchSearch =
+        searchQuery === "" ||
+        s.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.customerName &&
+          s.customerName.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchStatus && matchSearch;
+    });
+  }, [sales, statusFilter, searchQuery]);
+
+  const summary = useMemo(() => {
+    const totalRevenue = sales.reduce((acc, s) => acc + (s.finalAmount || 0), 0);
+    const totalPaid = sales.reduce((acc, s) => acc + (s.paidAmount || 0), 0);
+    const totalDue = sales.reduce((acc, s) => acc + (s.dueAmount || 0), 0);
+    return {
+      totalTransactions: sales.length,
+      totalRevenue,
+      totalPaid,
+      totalDue,
+    };
+  }, [sales]);
+
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "Lunas":
-        return "bg-green-100 text-green-700";
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Lunas
+          </span>
+        );
       case "DP":
-        return "bg-yellow-100 text-yellow-700";
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-700 border border-amber-200">
+            <Clock3 className="w-3.5 h-3.5" />
+            DP / Bertahap
+          </span>
+        );
       default:
-        return "bg-red-100 text-red-700";
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            {status}
+          </span>
+        );
     }
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
         <div>
-          <h1 className="text-2xl font-bold">Riwayat Transaksi</h1>
-          <p className="text-gray-500 text-sm">
-            Kelola daftar penjualan, cek detail nota, dan batal transaksi.
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              <Receipt className="w-3.5 h-3.5" />
+              Penjualan Toko
+            </span>
+            <span className="text-xs text-gray-500">
+              Total {sales.length} nota transaksi
+            </span>
+          </div>
+          <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">
+            Riwayat Penjualan & Nota
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Pantau seluruh invoice, rincian pembayaran pelanggan, cetak ulang, dan batalkan transaksi.
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           <a
             href="/api/sales/export"
             target="_blank"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-2 transition-all shadow-sm active:scale-95"
+            className="h-11 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md shadow-emerald-500/20 active:scale-95 transition-all inline-flex items-center gap-2"
           >
-            <FileDown className="w-4 h-4" />
-            Export CSV
+            <FileDown className="w-4 h-4 stroke-[2.5]" />
+            <span>Export CSV</span>
           </a>
+        </div>
+      </div>
 
-          <div className="relative w-72">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Cari No. Nota atau Pelanggan (Enter)"
-              className="pl-9"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearch}
-            />
+      {/* SUMMARY CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Total Penjualan Kotor
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
+              Rp {summary.totalRevenue.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Dari {summary.totalTransactions} transaksi tercatat
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Kas Diterima (Lunas / DP)
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-emerald-600 tracking-tight font-mono">
+              Rp {summary.totalPaid.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Arus uang masuk nyata dari kasir
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Piutang / Sisa Belum Bayar
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-rose-600 tracking-tight font-mono">
+              Rp {summary.totalDue.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Sisa kekurangan pembayaran pelanggan
+            </p>
           </div>
         </div>
       </div>
 
-      {/* TABEL DATA */}
-      <div className="border rounded-lg bg-white overflow-hidden shadow-sm">
+      {/* FILTER & SEARCH BAR */}
+      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Cari No. Nota atau Pelanggan..."
+            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                loadSales("");
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* STATUS FILTER TABS */}
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
+          {[
+            { id: "all", label: "Semua Nota" },
+            { id: "Lunas", label: "Lunas" },
+            { id: "DP", label: "DP / Sebagian" },
+            { id: "Belum Bayar", label: "Belum Bayar" },
+          ].map((item) => {
+            const isSelected = statusFilter === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setStatusFilter(item.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? "bg-[#2563EB] text-white shadow-xs"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* TABEL DATA TRANSAKSI */}
+      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
         <Table>
-          <TableHeader className="bg-gray-50">
-            <TableRow>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>No. Invoice</TableHead>
-              <TableHead>Pelanggan</TableHead>
-              <TableHead className="text-right">Total Transaksi</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-center w-[120px]">Aksi</TableHead>
+          <TableHeader>
+            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                Waktu & Tanggal
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                No. Invoice
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                Pelanggan
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
+                Total Tagihan
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
+                Status
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[110px]">
+                Aksi
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center h-24 text-gray-500"
-                >
-                  Memuat data...
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
+                  <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <p className="font-bold text-gray-700 text-sm">
+                    Memuat riwayat penjualan...
+                  </p>
                 </TableCell>
               </TableRow>
-            ) : sales.length > 0 ? (
-              sales.map((sale) => (
-                <TableRow key={sale.id}>
-                  <TableCell>
+            ) : filteredSales.length > 0 ? (
+              filteredSales.map((sale) => (
+                <TableRow
+                  key={sale.id}
+                  className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
+                >
+                  <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
                     {new Date(sale.createdAt).toLocaleDateString("id-ID", {
                       day: "2-digit",
                       month: "short",
@@ -201,52 +376,58 @@ export default function SalesPage() {
                       minute: "2-digit",
                     })}
                   </TableCell>
-                  <TableCell className="font-semibold text-blue-600">
+                  <TableCell className="py-3.5 px-4 font-mono font-bold text-sm text-[#2563EB]">
                     {sale.invoiceNumber}
                   </TableCell>
-                  <TableCell>{sale.customerName || "-"}</TableCell>
-                  <TableCell className="text-right font-bold">
+                  <TableCell className="py-3.5 px-4">
+                    <div className="font-bold text-sm text-gray-900">
+                      {sale.customerName || "Pelanggan Umum"}
+                    </div>
+                    {sale.customerPhone && (
+                      <div className="text-xs text-gray-400 font-mono">
+                        {sale.customerPhone}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-right font-black text-sm text-gray-950 font-mono">
                     Rp {sale.finalAmount.toLocaleString("id-ID")}
                   </TableCell>
-                  <TableCell className="text-center">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(sale.paymentStatus)}`}
-                    >
-                      {sale.paymentStatus}
-                    </span>
+                  <TableCell className="py-3.5 px-4 text-center">
+                    {getStatusBadge(sale.paymentStatus)}
                   </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Lihat Detail"
+                  <TableCell className="py-3.5 px-4 text-center">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <button
                         onClick={() => {
                           setSelectedSale(sale);
                           setIsModalOpen(true);
                         }}
+                        className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+                        title="Lihat Rincian Nota"
                       >
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Batal Transaksi (Void)"
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => handleVoid(sale.id, sale.invoiceNumber)}
+                        className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors"
+                        title="Batal Transaksi (Void & Kembalikan Stok)"
                       >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center h-24 text-gray-500"
-                >
-                  Data transaksi tidak ditemukan.
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
+                  <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
+                  <p className="font-bold text-gray-700 text-base">
+                    Tidak ada transaksi penjualan ditemukan
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Coba sesuaikan kata kunci pencarian atau ubah status filter.
+                  </p>
                 </TableCell>
               </TableRow>
             )}
@@ -256,66 +437,83 @@ export default function SalesPage() {
 
       {/* MODAL DETAIL NOTA */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-500" />
-              Detail Nota: {selectedSale?.invoiceNumber}
+            <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+              <span>Detail Nota: {selectedSale?.invoiceNumber}</span>
             </DialogTitle>
+            <DialogDescription className="text-xs text-gray-500">
+              Rincian barang, diskon, dan status pelunasan transaksi ini.
+            </DialogDescription>
           </DialogHeader>
 
           {selectedSale && (
-            <div className="space-y-6 py-2">
+            <div className="space-y-5 pt-2">
               {/* Info Pelanggan & Waktu */}
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border text-sm">
+              <div className="grid grid-cols-2 gap-4 bg-gray-50/80 p-4 rounded-2xl border border-gray-200 text-sm">
                 <div>
-                  <p className="text-gray-500 mb-1">Pelanggan</p>
-                  <p className="font-semibold">
-                    {selectedSale.customerName || "Noname / Umum"}
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" /> Pelanggan
                   </p>
-                  <p className="text-gray-600">
-                    {selectedSale.customerPhone || "-"}
+                  <p className="font-black text-gray-900 text-base">
+                    {selectedSale.customerName || "Pelanggan Umum"}
+                  </p>
+                  <p className="text-xs text-gray-500 font-mono mt-0.5">
+                    {selectedSale.customerPhone || "Tanpa No. WhatsApp"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Waktu Transaksi</p>
-                  <p className="font-semibold">
-                    {new Date(selectedSale.createdAt).toLocaleString("id-ID")}
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5" /> Waktu Transaksi
                   </p>
+                  <p className="font-bold text-gray-800 text-sm">
+                    {new Date(selectedSale.createdAt).toLocaleString("id-ID", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </p>
+                  <div className="mt-1.5">
+                    {getStatusBadge(selectedSale.paymentStatus)}
+                  </div>
                 </div>
               </div>
 
               {/* Tabel Barang yang Dibeli */}
               <div>
-                <h4 className="font-semibold mb-3">Daftar Pembelian</h4>
-                <div className="border rounded-md overflow-hidden">
+                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                  Daftar Barang yang Dibeli
+                </h4>
+                <div className="border border-gray-200 rounded-2xl overflow-hidden">
                   <Table>
-                    <TableHeader className="bg-gray-100">
+                    <TableHeader className="bg-gray-50">
                       <TableRow>
-                        <TableHead>Produk</TableHead>
-                        <TableHead className="text-center">Qty</TableHead>
-                        <TableHead className="text-right">Harga</TableHead>
-                        <TableHead className="text-right">Subtotal</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700">Produk</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-center">Qty</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-right">Harga Satuan</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-right">Subtotal</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {selectedSale.saleItems.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            {item.product.name}
+                        <TableRow key={item.id} className="border-b border-gray-100">
+                          <TableCell className="py-3 px-3">
+                            <div className="font-bold text-sm text-gray-900">
+                              {item.product.name}
+                            </div>
                             {item.product.isService && (
-                              <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
-                                Jasa
+                              <span className="inline-block mt-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
+                                Jasa / Servis
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="text-center">
+                          <TableCell className="py-3 px-3 text-center font-bold text-sm text-gray-700 font-mono">
                             {item.quantity}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="py-3 px-3 text-right text-xs font-medium text-gray-600 font-mono">
                             Rp {item.unitPrice.toLocaleString("id-ID")}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell className="py-3 px-3 text-right font-black text-sm text-gray-950 font-mono">
                             Rp {item.subTotal.toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
@@ -327,37 +525,37 @@ export default function SalesPage() {
 
               {/* Rincian Pembayaran */}
               <div className="flex justify-end">
-                <div className="w-64 space-y-2 text-sm">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Subtotal:</span>
-                    <span>
+                <div className="w-72 bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-2 text-sm">
+                  <div className="flex justify-between text-gray-600 text-xs">
+                    <span>Subtotal Barang:</span>
+                    <span className="font-mono font-semibold">
                       Rp {selectedSale.totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Diskon:</span>
-                    <span>
-                      Rp {selectedSale.discount.toLocaleString("id-ID")}
+                  <div className="flex justify-between text-emerald-600 text-xs font-semibold">
+                    <span>Potongan / Diskon:</span>
+                    <span className="font-mono">
+                      - Rp {selectedSale.discount.toLocaleString("id-ID")}
                     </span>
                   </div>
-                  <div className="flex justify-between font-bold text-base border-t pt-2">
+                  <div className="flex justify-between font-black text-base border-t border-gray-200 pt-2 text-gray-950">
                     <span>Total Akhir:</span>
-                    <span className="text-blue-600">
+                    <span className="text-[#2563EB] font-mono">
                       Rp {selectedSale.finalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
 
-                  <div className="border-t pt-2 mt-2 space-y-1">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Dibayar:</span>
-                      <span>
+                  <div className="border-t border-gray-200 pt-2 mt-2 space-y-1">
+                    <div className="flex justify-between text-gray-600 text-xs">
+                      <span>Uang Diterima:</span>
+                      <span className="font-mono font-bold text-gray-900">
                         Rp {selectedSale.paidAmount.toLocaleString("id-ID")}
                       </span>
                     </div>
                     {selectedSale.dueAmount > 0 && (
-                      <div className="flex justify-between font-bold text-red-500 bg-red-50 p-1 rounded">
-                        <span>Kekurangan:</span>
-                        <span>
+                      <div className="flex justify-between font-bold text-xs text-rose-600 bg-rose-50 p-2 rounded-xl border border-rose-200">
+                        <span>Sisa Kekurangan:</span>
+                        <span className="font-mono">
                           Rp {selectedSale.dueAmount.toLocaleString("id-ID")}
                         </span>
                       </div>
@@ -368,13 +566,32 @@ export default function SalesPage() {
 
               {/* Catatan Kasir */}
               {selectedSale.notes && (
-                <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-sm flex gap-2">
-                  <AlertCircle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
-                  <p className="text-yellow-800">
-                    <strong>Catatan Kasir:</strong> {selectedSale.notes}
-                  </p>
+                <div className="bg-amber-50/80 border border-amber-200 p-3.5 rounded-2xl text-xs flex gap-2.5 items-start">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold text-amber-900">Catatan Kasir: </span>
+                    <span className="text-amber-800">{selectedSale.notes}</span>
+                  </div>
                 </div>
               )}
+
+              {/* Tombol aksi modal */}
+              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                <Button
+                  variant="ghost"
+                  className="rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold"
+                  onClick={() => handleVoid(selectedSale.id, selectedSale.invoiceNumber)}
+                >
+                  <Trash2 className="w-4 h-4 mr-1.5" />
+                  Batalkan Transaksi (Void)
+                </Button>
+                <Button
+                  className="rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold px-5"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Tutup
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

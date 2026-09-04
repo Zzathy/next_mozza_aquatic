@@ -1,7 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, Trash2, Pencil, CalendarIcon } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  Plus,
+  Trash2,
+  Pencil,
+  Search,
+  Truck,
+  Sparkles,
+  Phone,
+  FileText,
+  AlertCircle,
+  X,
+  Wallet,
+  Calendar,
+  CheckCircle2,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,9 +77,12 @@ interface PurchaseData {
 export default function PurchasePage() {
   const [purchases, setPurchases] = useState<PurchaseData[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const [supplierName, setSupplierName] = useState("");
@@ -76,42 +94,56 @@ export default function PurchasePage() {
   const [discount, setDiscount] = useState("0");
   const [paidAmount, setPaidAmount] = useState("0");
 
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + (Number(item.qty) || 0) * (Number(item.buyPrice) || 0),
-    0,
-  );
-  const finalAmount = totalAmount - (Number(discount) || 0);
-  const dueAmount = finalAmount - (Number(paidAmount) || 0);
+  const totalAmount = useMemo(() => {
+    return cart.reduce(
+      (sum, item) => sum + (Number(item.qty) || 0) * (Number(item.buyPrice) || 0),
+      0,
+    );
+  }, [cart]);
+
+  const finalAmount = useMemo(() => {
+    return Math.max(0, totalAmount - (Number(discount) || 0));
+  }, [totalAmount, discount]);
+
+  const dueAmount = useMemo(() => {
+    return Math.max(0, finalAmount - (Number(paidAmount) || 0));
+  }, [finalAmount, paidAmount]);
+
   const paymentStatus = dueAmount > 0 ? "Hutang" : "Lunas";
 
-  const fetchPurchasesAPI = async () => {
+  const fetchPurchasesAPI = useCallback(async () => {
     const res = await fetch("/api/purchases");
     if (!res.ok) throw new Error("Gagal ambil data pembelian");
     const json = await res.json();
     return json.data || [];
-  };
+  }, []);
 
-  const fetchProductsAPI = async () => {
+  const fetchProductsAPI = useCallback(async () => {
     const res = await fetch("/api/products");
     if (!res.ok) throw new Error("Gagal ambil data produk");
     const json = await res.json();
     return json.data || [];
-  };
+  }, []);
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     try {
       const data = await fetchPurchasesAPI();
       setPurchases(data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchPurchasesAPI]);
 
   useEffect(() => {
-    fetchPurchasesAPI().then(setPurchases).catch(console.error);
-
-    fetchProductsAPI().then(setProducts).catch(console.error);
-  }, []);
+    setIsFetching(true);
+    Promise.all([fetchPurchasesAPI(), fetchProductsAPI()])
+      .then(([purchasesData, productsData]) => {
+        setPurchases(purchasesData);
+        setProducts(productsData);
+      })
+      .catch(console.error)
+      .finally(() => setIsFetching(false));
+  }, [fetchPurchasesAPI, fetchProductsAPI]);
 
   const addCartItem = () => {
     setCart([
@@ -143,7 +175,7 @@ export default function PurchasePage() {
     setNotes("");
     setDiscount("0");
     setPaidAmount("0");
-    setCart([{ productId: "", qty: "1", buyPrice: "0", expiredDate: "" }]); // Default 1 baris kosong
+    setCart([{ productId: "", qty: "1", buyPrice: "0", expiredDate: "" }]);
   };
 
   const handleEditClick = (purchase: PurchaseData) => {
@@ -156,9 +188,9 @@ export default function PurchasePage() {
 
     const mappedCart = purchase.purchaseItems.map((item) => ({
       productId: String(item.productId),
-      qty: String(item.initialStock),
+      qty: String(item.initialStock || item.qty || 1),
       buyPrice: String(item.buyPrice),
-      expiredDate: item.expiredDate ? item.expiredDate.split("T")[0] : "", // Ambil YYYY-MM-DD
+      expiredDate: item.expiredDate ? item.expiredDate.split("T")[0] : "",
     }));
     setCart(mappedCart);
     setIsModalOpen(true);
@@ -167,7 +199,6 @@ export default function PurchasePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validasi murni frontend
     if (cart.length === 0 || cart.some((item) => !item.productId)) {
       alert("Pilih minimal 1 produk di keranjang!");
       return;
@@ -205,7 +236,6 @@ export default function PurchasePage() {
         throw new Error(resData.message || "Gagal menyimpan pembelian");
       }
 
-      alert(`Pembelian berhasil ${isEditing ? "diperbarui" : "disimpan"}!`);
       setIsModalOpen(false);
       refreshData();
     } catch (error: unknown) {
@@ -218,7 +248,7 @@ export default function PurchasePage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Yakin mau hapus nota kulakan ini?")) return;
+    if (!confirm("Yakin ingin menghapus nota pembelian (kulakan) ini?")) return;
 
     try {
       const res = await fetch(`/api/purchases/${id}`, { method: "DELETE" });
@@ -226,7 +256,6 @@ export default function PurchasePage() {
 
       if (!res.ok) throw new Error(resData.message || "Gagal hapus data");
 
-      alert("Berhasil dihapus!");
       refreshData();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -235,13 +264,52 @@ export default function PurchasePage() {
     }
   };
 
+  const filteredPurchases = useMemo(() => {
+    return purchases.filter((p) => {
+      const matchStatus =
+        statusFilter === "all" ||
+        p.paymentStatus.toLowerCase() === statusFilter.toLowerCase();
+      const matchSearch =
+        searchQuery === "" ||
+        (p.supplierName &&
+          p.supplierName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.supplierPhone && p.supplierPhone.includes(searchQuery)) ||
+        (p.notes && p.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchStatus && matchSearch;
+    });
+  }, [purchases, statusFilter, searchQuery]);
+
+  const summary = useMemo(() => {
+    const totalSpent = purchases.reduce((acc, p) => acc + (p.finalAmount || 0), 0);
+    const totalPaid = purchases.reduce((acc, p) => acc + (p.paidAmount || 0), 0);
+    const totalDebt = purchases.reduce((acc, p) => acc + Math.max(0, (p.finalAmount || 0) - (p.paidAmount || 0)), 0);
+    return {
+      totalPurchases: purchases.length,
+      totalSpent,
+      totalPaid,
+      totalDebt,
+    };
+  }, [purchases]);
+
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
         <div>
-          <h1 className="text-2xl font-bold">Barang Masuk (Kulakan)</h1>
-          <p className="text-gray-500 text-sm">
-            Catat pembelian barang dari supplier ke toko.
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              <Truck className="w-3.5 h-3.5" />
+              Kulakan & Restock
+            </span>
+            <span className="text-xs text-gray-500">
+              Total {purchases.length} faktur masuk
+            </span>
+          </div>
+          <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">
+            Barang Masuk (Kulakan)
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Catat pengadaan stok toko, modal pokok produk, hutang ke supplier, dan riwayat faktur.
           </p>
         </div>
 
@@ -251,74 +319,79 @@ export default function PurchasePage() {
               resetForm();
               setIsModalOpen(true);
             }}
+            className="h-11 px-5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold shadow-md shadow-blue-500/25 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
           >
-            + Tambah Pembelian
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Tambah Faktur Kulakan</span>
           </Button>
 
-          <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Edit Nota Pembelian" : "Nota Pembelian Baru"}
+              <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <span>
+                  {editingId ? "Edit Faktur Kulakan" : "Faktur Pembelian Baru"}
+                </span>
               </DialogTitle>
-              <DialogDescription>
-                Masukkan detail supplier dan keranjang belanja.
+              <DialogDescription className="text-xs text-gray-500">
+                Masukkan identitas supplier dan daftar item barang yang masuk ke gudang.
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="grid gap-6 py-4">
+            <form onSubmit={handleSubmit} className="space-y-5 pt-2">
               {/* Info Supplier */}
-              <div className="grid grid-cols-2 gap-4 border-b pb-4">
-                <div className="grid gap-2">
-                  <Label>Nama Supplier</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/80 p-4 rounded-2xl border border-gray-200">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold text-gray-700">Nama Supplier / Agen</Label>
                   <Input
                     value={supplierName}
                     onChange={(e) => setSupplierName(e.target.value)}
-                    placeholder="Misal: Agen Makmur"
+                    placeholder="Misal: Agen Ikan Kediri / Distributor Agaru"
+                    className="h-10 text-sm rounded-xl font-medium bg-white"
                   />
                 </div>
-                <div className="grid gap-2">
-                  <Label>No. HP Supplier</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold text-gray-700">No. WhatsApp Supplier</Label>
                   <Input
                     value={supplierPhone}
                     onChange={(e) => setSupplierPhone(e.target.value)}
-                    placeholder="0812xxx"
+                    placeholder="Contoh: 081234567890"
+                    className="h-10 text-sm rounded-xl font-mono bg-white"
                   />
                 </div>
               </div>
 
               {/* Keranjang Belanja */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <Label className="text-base font-semibold">
-                    Daftar Barang
+              <div className="space-y-2.5">
+                <div className="flex justify-between items-center">
+                  <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Daftar Barang Masuk
                   </Label>
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={addCartItem}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
                   >
-                    + Tambah Baris
-                  </Button>
+                    <Plus className="w-3.5 h-3.5" />
+                    Tambah Baris
+                  </button>
                 </div>
 
-                <div className="border rounded-md">
+                <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
                   <Table>
                     <TableHeader className="bg-gray-50">
                       <TableRow>
-                        <TableHead>Produk</TableHead>
-                        <TableHead className="w-24">Qty</TableHead>
-                        <TableHead className="w-40">Harga Modal/Pcs</TableHead>
-                        <TableHead className="w-40">
-                          Expired (Opsional)
-                        </TableHead>
-                        <TableHead className="w-16"></TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700">Produk</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-28 text-center">Qty</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-44 text-right">Harga Modal/Pcs</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-36">Expired</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-12 text-center"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {cart.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
+                        <TableRow key={index} className="border-b border-gray-100">
+                          <TableCell className="p-2">
                             <Select
                               value={item.productId}
                               onValueChange={(val) =>
@@ -326,7 +399,7 @@ export default function PurchasePage() {
                               }
                               required
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="h-9 text-xs rounded-xl font-medium w-full">
                                 <SelectValue placeholder="Pilih Produk" />
                               </SelectTrigger>
                               <SelectContent>
@@ -338,7 +411,7 @@ export default function PurchasePage() {
                               </SelectContent>
                             </Select>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="p-2">
                             <Input
                               type="number"
                               min="1"
@@ -347,46 +420,40 @@ export default function PurchasePage() {
                               onChange={(e) =>
                                 updateCartItem(index, "qty", e.target.value)
                               }
+                              className="h-9 text-xs font-mono font-bold text-center rounded-xl"
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="p-2">
                             <Input
                               type="number"
                               min="0"
                               required
                               value={item.buyPrice}
                               onChange={(e) =>
-                                updateCartItem(
-                                  index,
-                                  "buyPrice",
-                                  e.target.value,
-                                )
+                                updateCartItem(index, "buyPrice", e.target.value)
                               }
+                              className="h-9 text-xs font-mono font-bold text-right rounded-xl"
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="p-2">
                             <Input
                               type="date"
                               value={item.expiredDate}
                               onChange={(e) =>
-                                updateCartItem(
-                                  index,
-                                  "expiredDate",
-                                  e.target.value,
-                                )
+                                updateCartItem(index, "expiredDate", e.target.value)
                               }
+                              className="h-9 text-xs rounded-xl font-mono"
                             />
                           </TableCell>
-                          <TableCell>
-                            <Button
+                          <TableCell className="p-2 text-center">
+                            <button
                               type="button"
-                              variant="ghost"
-                              size="icon"
                               onClick={() => removeCartItem(index)}
-                              disabled={cart.length === 1} // Jangan hapus kalo sisa 1 baris
+                              disabled={cart.length === 1}
+                              className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 disabled:opacity-30"
                             >
-                              <Trash2 className="w-4 h-4 text-red-500" />
-                            </Button>
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -396,72 +463,84 @@ export default function PurchasePage() {
               </div>
 
               {/* Ringkasan & Pembayaran */}
-              <div className="grid grid-cols-2 gap-8 border-t pt-4 bg-gray-50 p-4 rounded-lg">
-                <div className="grid gap-2">
-                  <Label>Catatan</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/90 p-4 rounded-2xl border border-gray-200">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold text-gray-700">Catatan Pengadaan</Label>
                   <Input
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Catatan tambahan (opsional)"
+                    placeholder="Contoh: Titipan pengiriman via ekspedisi, tempo 14 hari"
+                    className="h-10 text-xs rounded-xl bg-white"
                   />
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">Subtotal</span>
-                    <span className="font-medium">
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>Subtotal Barang:</span>
+                    <span className="font-mono font-bold">
                       Rp {totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500 mt-2">Diskon (Rp)</span>
+                  <div className="flex justify-between items-center gap-2">
+                    <span className="text-emerald-700 font-semibold">Diskon Supplier (Rp):</span>
                     <Input
                       type="number"
-                      className="w-32 h-8 text-right"
+                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
                     />
                   </div>
 
-                  <div className="flex justify-between items-center font-bold text-base border-t pt-2">
-                    <span>Total Tagihan</span>
-                    <span>Rp {finalAmount.toLocaleString("id-ID")}</span>
+                  <div className="flex justify-between items-center font-black text-sm border-t border-gray-200 pt-2 text-gray-950">
+                    <span>Total Tagihan:</span>
+                    <span className="text-[#2563EB] font-mono">
+                      Rp {finalAmount.toLocaleString("id-ID")}
+                    </span>
                   </div>
 
-                  <div className="flex justify-between items-center text-sm pt-2">
-                    <span className="text-gray-500">Uang Dibayar (Rp)</span>
+                  <div className="flex justify-between items-center gap-2 pt-1">
+                    <span className="text-gray-700 font-bold">Uang Dibayar (Rp):</span>
                     <Input
                       type="number"
-                      className="w-32 h-8 text-right"
+                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white"
                       value={paidAmount}
                       onChange={(e) => setPaidAmount(e.target.value)}
                     />
                   </div>
 
                   <div
-                    className={`flex justify-between items-center font-bold text-sm ${dueAmount > 0 ? "text-red-500" : "text-green-600"}`}
+                    className={`flex justify-between items-center font-bold text-xs p-2 rounded-xl border ${
+                      dueAmount > 0
+                        ? "bg-rose-50 text-rose-700 border-rose-200"
+                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    }`}
                   >
-                    <span>Status Pembayaran</span>
+                    <span>Status:</span>
                     <span>
                       {paymentStatus}{" "}
                       {dueAmount > 0
-                        ? `(Kurang Rp ${dueAmount.toLocaleString("id-ID")})`
-                        : ""}
+                        ? `(Hutang Rp ${dueAmount.toLocaleString("id-ID")})`
+                        : "Lengkap"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl text-xs font-bold"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Batal
                 </Button>
-                <Button type="submit" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold px-5"
+                >
                   {isLoading ? "Menyimpan..." : "Simpan Pembelian"}
                 </Button>
               </div>
@@ -470,64 +549,214 @@ export default function PurchasePage() {
         </Dialog>
       </div>
 
-      {/* Tabel Data */}
-      <div className="border rounded-lg bg-white overflow-hidden">
+      {/* SUMMARY CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Total Pengadaan
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
+              Rp {summary.totalSpent.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Dari {summary.totalPurchases} nota kulakan tercatat
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Sudah Dibayar
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-emerald-600 tracking-tight font-mono">
+              Rp {summary.totalPaid.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Kas riil keluar untuk modal kulakan
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Tanggungan Hutang Supplier
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-rose-600 tracking-tight font-mono">
+              Rp {summary.totalDebt.toLocaleString("id-ID")}
+            </div>
+            <p className="text-xs font-semibold text-gray-400 mt-1">
+              Total kewajiban tempo pembayaran
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* FILTER & SEARCH BAR */}
+      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Cari nama supplier atau catatan..."
+            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
+          {[
+            { id: "all", label: "Semua Faktur" },
+            { id: "Lunas", label: "Lunas" },
+            { id: "Hutang", label: "Hutang / Tempo" },
+          ].map((item) => {
+            const isSelected = statusFilter === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setStatusFilter(item.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? "bg-[#2563EB] text-white shadow-xs"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* TABEL DATA KULAKAN */}
+      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead>Item Qty</TableHead>
-              <TableHead className="text-right">Total Tagihan</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="w-[100px] text-center">Aksi</TableHead>
+            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                Tanggal
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                Supplier & Kontak
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+                Jumlah Barang
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
+                Total Tagihan
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
+                Status
+              </TableHead>
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[110px]">
+                Aksi
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {purchases.length > 0 ? (
-              purchases.map((p) => {
+            {isFetching ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
+                  <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <p className="font-bold text-gray-700 text-sm">
+                    Memuat riwayat kulakan...
+                  </p>
+                </TableCell>
+              </TableRow>
+            ) : filteredPurchases.length > 0 ? (
+              filteredPurchases.map((p) => {
                 const totalItemQty = p.purchaseItems.reduce(
-                  (sum, item) => sum + Number(item.qty || item.initialStock),
+                  (sum, item) => sum + Number(item.qty || item.initialStock || 0),
                   0,
                 );
 
                 return (
-                  <TableRow key={p.id}>
-                    <TableCell>
-                      {new Date(p.entryDate).toLocaleDateString("id-ID")}
+                  <TableRow
+                    key={p.id}
+                    className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
+                  >
+                    <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
+                      {new Date(p.entryDate).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {p.supplierName || "Tanpa Nama"}
+                    <TableCell className="py-3.5 px-4">
+                      <div className="font-bold text-sm text-gray-900">
+                        {p.supplierName || "Supplier Tanpa Nama"}
+                      </div>
+                      {p.supplierPhone && (
+                        <div className="text-xs text-gray-400 font-mono">
+                          {p.supplierPhone}
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell>
-                      {p.purchaseItems.length} Macam ({totalItemQty} Pcs)
+                    <TableCell className="py-3.5 px-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                        {p.purchaseItems.length} Produk ({totalItemQty} pcs)
+                      </span>
                     </TableCell>
-                    <TableCell className="text-right font-semibold">
+                    <TableCell className="py-3.5 px-4 text-right font-black text-sm text-gray-950 font-mono">
                       Rp {p.finalAmount.toLocaleString("id-ID")}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="py-3.5 px-4 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${p.paymentStatus === "Lunas" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${
+                          p.paymentStatus === "Lunas"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border-rose-200"
+                        }`}
                       >
+                        {p.paymentStatus === "Lunas" ? (
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        ) : (
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                        )}
                         {p.paymentStatus}
                       </span>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                    <TableCell className="py-3.5 px-4 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
                           onClick={() => handleEditClick(p)}
+                          className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+                          title="Edit Faktur"
                         >
-                          <Pencil className="w-4 h-4 text-blue-500" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(p.id)}
+                          className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors"
+                          title="Hapus Faktur"
                         >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -535,11 +764,14 @@ export default function PurchasePage() {
               })
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center h-24 text-gray-500"
-                >
-                  Belum ada riwayat barang masuk.
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
+                  <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
+                  <p className="font-bold text-gray-700 text-base">
+                    Belum ada data kulakan
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Klik tombol Tambah Faktur Kulakan untuk mencatat stok barang masuk.
+                  </p>
                 </TableCell>
               </TableRow>
             )}

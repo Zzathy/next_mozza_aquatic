@@ -40,9 +40,15 @@ export default function ReceiptPrint({ data }: { data: ReceiptData | null }) {
       />
 
       <div className="text-center mb-4">
-        <h2 className="text-lg font-bold uppercase">Mozza Aquatic</h2>
-        <p className="text-[10px] leading-tight">Jl. Contoh Alamat No. 123</p>
-        <p className="text-[10px] leading-tight">Telp: 0812-3456-7890</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/mozza_logo_bw.png"
+          alt="Mozza Aquatic Logo"
+          className="w-16 h-16 mx-auto mb-1.5 object-contain"
+        />
+        <h2 className="text-lg font-bold uppercase tracking-wide">Mozza Aquatic</h2>
+        <p className="text-[10px] leading-tight text-neutral-700">Aquascape & Ornamental Fish</p>
+        <p className="text-[10px] leading-tight text-neutral-600">Banyuwangi - Jawa Timur</p>
       </div>
 
       <div className="border-t border-dashed border-black my-2"></div>

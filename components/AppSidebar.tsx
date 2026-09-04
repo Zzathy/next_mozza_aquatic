@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
@@ -79,13 +80,32 @@ export default function AppSidebar() {
   });
 
   return (
-    <aside className="w-64 bg-white border-r shadow-sm flex flex-col justify-between print:hidden">
+    <aside className="w-64 bg-white border-r border-gray-200 text-gray-800 flex flex-col justify-between shrink-0 print:hidden select-none shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
       <div>
-        <div className="h-16 flex items-center px-6 border-b">
-          <h1 className="text-xl font-bold text-blue-600">Mozza Aquatic</h1>
+        {/* LOGO BRANDING */}
+        <div className="h-20 flex items-center gap-3 px-4 border-b border-gray-100 bg-white">
+          <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-gray-200 bg-black shrink-0 shadow-xs">
+            <Image
+              src="/mozza_logo.png"
+              alt="Mozza Aquatic"
+              fill
+              sizes="48px"
+              className="object-contain p-0.5"
+              priority
+            />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-base font-extrabold text-gray-950 leading-tight tracking-tight truncate">
+              Mozza Aquatic
+            </h1>
+            <p className="text-xs font-semibold text-gray-500 tracking-wide">
+              Aquascape & Fish Store
+            </p>
+          </div>
         </div>
 
-        <nav className="p-4 space-y-1">
+        {/* NAVIGATION LINKS */}
+        <nav className="p-3 space-y-1">
           {menuItems.map((item) => {
             const isActive = pathName === item.href;
             const Icon = item.icon;
@@ -93,14 +113,14 @@ export default function AppSidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 font-semibold"
+                    ? "bg-[#2563EB] text-white shadow-sm shadow-blue-500/20"
                     : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >
                 <Icon
-                  className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-400"}`}
+                  className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-400"}`}
                 />
                 {item.name}
               </Link>
@@ -109,12 +129,13 @@ export default function AppSidebar() {
         </nav>
       </div>
 
-      <div className="p-4 border-t">
+      {/* USER / LOGOUT */}
+      <div className="p-4 border-t border-gray-100 bg-white">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 transition-colors font-medium"
+          className="flex items-center gap-2.5 px-3 py-2 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 border border-transparent transition-colors"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-4 h-4" />
           Keluar (Logout)
         </button>
       </div>

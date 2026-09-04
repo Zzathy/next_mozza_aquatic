@@ -60,6 +60,7 @@ export default function CashierPage() {
   const [paidAmount, setPaidAmount] = useState("0");
 
   const [activeReceipt, setActiveReceipt] = useState<ReceiptData | null>(null);
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -283,6 +284,7 @@ export default function CashierPage() {
       setNotes("");
       setDiscount("0");
       setPaidAmount("0");
+      setIsMobileCartOpen(false);
       success("Transaksi berhasil diproses & nota dicetak!");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -296,44 +298,60 @@ export default function CashierPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#F3F4F6] text-gray-900 overflow-hidden select-none">
+    <div className="flex h-screen bg-[#F3F4F6] text-gray-900 overflow-hidden select-none relative">
       {/* AREA KIRI: KATALOG PRODUK */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-[#F8FAFC] print:hidden">
+      <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-[#F8FAFC] print:hidden h-full">
         {/* TOP BAR HEADER */}
-        <header className="px-6 py-4 border-b border-gray-200 bg-white shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <header className="px-4 lg:px-6 py-3.5 border-b border-gray-200 bg-white shadow-xs flex items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                 <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
                 KASIR MOZZA
               </span>
-              <span className="text-xs font-medium text-gray-500">
-                Mozza Aquatic Banyuwangi
+              <span className="text-xs font-medium text-gray-500 hidden sm:inline">
+                Mozza Aquatic
               </span>
             </div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight mt-1">
-              Katalog Produk & Aquascape
+            <h1 className="text-xl lg:text-2xl font-black text-gray-900 tracking-tight mt-0.5">
+              Katalog Produk
             </h1>
           </div>
 
-          {/* SEARCH BAR (BESAR, JELAS, MUDAH DITIK) */}
-          <div className="relative w-80 sm:w-96">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Cari nama ikan, pakan, tanaman..."
-              className="pl-11 pr-10 h-12 bg-gray-50 border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:bg-white rounded-xl shadow-xs transition-all font-medium"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
+          <div className="flex items-center gap-2">
+            {/* SEARCH BAR */}
+            <div className="relative w-48 sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Cari produk..."
+                className="pl-9 pr-8 h-10 bg-gray-50 border-gray-300 text-gray-900 text-sm placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:bg-white rounded-xl shadow-xs transition-all font-medium"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* FLOATING CART BUTTON FOR MOBILE/TABLET */}
+            <button
+              onClick={() => setIsMobileCartOpen(true)}
+              className="lg:hidden relative h-10 px-3.5 rounded-xl bg-[#2563EB] text-white flex items-center gap-1.5 font-bold text-xs shadow-md shadow-blue-500/25 shrink-0 active:scale-95 transition-all"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>Keranjang</span>
+              {cart.length > 0 && (
+                <span className="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center -mr-1">
+                  {cart.length}
+                </span>
+              )}
+            </button>
           </div>
         </header>
 
@@ -479,10 +497,22 @@ export default function CashierPage() {
         </div>
       </div>
 
-      {/* AREA KANAN: PESANAN / BILLING CART (STYLE KONTRAST TINGGI & MUDAH DIGUNAKAN) */}
-      <div className="w-[430px] xl:w-[460px] flex flex-col bg-white border-l border-gray-200 shrink-0 shadow-xl z-10 print:hidden">
+      {/* AREA KANAN: PESANAN / BILLING CART (RESPONSIF DESKTOP & MOBILE DRAWER) */}
+      {/* OVERLAY DI MOBILE */}
+      {isMobileCartOpen && (
+        <div
+          onClick={() => setIsMobileCartOpen(false)}
+          className="fixed inset-0 bg-black/60 z-30 lg:hidden backdrop-blur-xs"
+        />
+      )}
+
+      <div
+        className={`fixed top-0 bottom-0 right-0 z-40 lg:static w-full sm:w-[420px] xl:w-[460px] flex flex-col bg-white border-l border-gray-200 shrink-0 shadow-2xl lg:shadow-xl print:hidden transition-transform duration-300 ease-in-out ${
+          isMobileCartOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+        }`}
+      >
         {/* CART HEADER */}
-        <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/70">
+        <div className="px-4 lg:px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-gray-50/70">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 text-[#2563EB] flex items-center justify-center font-bold">
               <ShoppingCart className="w-5 h-5 stroke-[2.5]" />
@@ -497,15 +527,24 @@ export default function CashierPage() {
             </div>
           </div>
 
-          {cart.length > 0 && (
+          <div className="flex items-center gap-2">
+            {cart.length > 0 && (
+              <button
+                onClick={clearCart}
+                className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1.5 rounded-xl border border-rose-200 transition-colors flex items-center gap-1"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Kosongkan
+              </button>
+            )}
             <button
-              onClick={clearCart}
-              className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-3 py-2 rounded-xl border border-rose-200 transition-colors flex items-center gap-1.5"
+              onClick={() => setIsMobileCartOpen(false)}
+              className="lg:hidden p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              title="Tutup Keranjang"
             >
-              <Trash2 className="w-4 h-4" />
-              Kosongkan
+              <X className="w-5 h-5" />
             </button>
-          )}
+          </div>
         </div>
 
         {/* CART ITEMS LIST */}

@@ -3,76 +3,86 @@
 import React, { useState } from "react";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import MobileMenuSheet from "@/components/MobileMenuSheet";
 import Image from "next/image";
-import { Menu } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { ShieldCheck, User } from "lucide-react";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string })?.role || "Owner";
 
   return (
     <div className="flex h-screen bg-[#F3F4F6] overflow-hidden print:h-auto print:bg-white text-gray-900 relative">
-      {/* DESKTOP SIDEBAR */}
+      {/* DESKTOP SIDEBAR (KHUSUS LAYAR KOMPUTER / TABLET BESAR) */}
       <div className="hidden lg:block h-full print:hidden">
         <AppSidebar />
       </div>
 
-      {/* MOBILE DRAWER OVERLAY */}
-      {isMobileOpen && (
-        <div
-          onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs transition-opacity print:hidden"
-        />
-      )}
-
-      {/* MOBILE DRAWER SIDEBAR */}
-      <div
-        className={`fixed top-0 bottom-0 left-0 z-50 transition-transform duration-300 ease-in-out lg:hidden print:hidden ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <AppSidebar onCloseMobile={() => setIsMobileOpen(false)} />
-      </div>
+      {/* MOBILE MENU SHEET (PENGGANTI SIDEBAR DI HP - ALA BOTTOM SHEET NATIVE APP) */}
+      <MobileMenuSheet
+        isOpen={isMenuSheetOpen}
+        onClose={() => setIsMenuSheetOpen(false)}
+      />
 
       {/* MAIN VIEWPORT */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        {/* MOBILE TOP BAR */}
-        <header className="lg:hidden h-14 bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0 print:hidden shadow-xs">
+        {/* MOBILE APP HEADER (CLEAN & NATIVE STYLE) */}
+        <header className="lg:hidden h-14 bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0 print:hidden shadow-2xs">
+          {/* BRANDING KIRI */}
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsMobileOpen(true)}
-              className="p-2 rounded-xl text-gray-700 hover:bg-gray-100 active:scale-95 transition-all"
-              title="Buka Menu"
-            >
-              <Menu className="w-5 h-5 stroke-[2.5]" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="relative w-7 h-7 rounded-lg overflow-hidden border border-gray-200 bg-black">
-                <Image
-                  src="/mozza_logo.png"
-                  alt="Mozza Logo"
-                  fill
-                  sizes="28px"
-                  className="object-contain p-0.5"
-                />
-              </div>
-              <span className="font-extrabold text-sm text-gray-900 tracking-tight">
+            <div className="relative w-8 h-8 rounded-xl overflow-hidden border border-gray-200 bg-black shadow-xs">
+              <Image
+                src="/mozza_logo.png"
+                alt="Mozza Logo"
+                fill
+                sizes="32px"
+                className="object-contain p-0.5"
+                priority
+              />
+            </div>
+            <div>
+              <span className="font-black text-sm text-gray-950 tracking-tight block leading-tight">
                 Mozza Aquatic
+              </span>
+              <span className="text-[10px] font-semibold text-gray-400 block tracking-wide">
+                Banyuwangi Store
               </span>
             </div>
           </div>
+
+          {/* PROFIL BADGE KANAN (SENTUH UNTUK BUKA MENU LAIN) */}
+          <button
+            onClick={() => setIsMenuSheetOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 border border-gray-200 hover:bg-gray-200/80 active:scale-95 transition-all text-xs font-bold"
+          >
+            <div
+              className={`w-4 h-4 rounded-full flex items-center justify-center text-white ${
+                role === "Owner" ? "bg-purple-600" : "bg-blue-600"
+              }`}
+            >
+              {role === "Owner" ? (
+                <ShieldCheck className="w-2.5 h-2.5" />
+              ) : (
+                <User className="w-2.5 h-2.5" />
+              )}
+            </div>
+            <span className="text-gray-700 text-[11px] font-extrabold">{role}</span>
+          </button>
         </header>
 
         {/* PAGE CONTENT WITH SAFE BOTTOM PADDING ON MOBILE FOR BOTTOM NAV */}
-        <main className="flex-1 overflow-y-auto print:overflow-visible bg-[#F3F4F6] pb-20 lg:pb-0">
+        <main className="flex-1 overflow-y-auto print:overflow-visible bg-[#F3F4F6] pb-24 lg:pb-0">
           {children}
         </main>
 
-        {/* MOBILE BOTTOM NAVIGATION BAR */}
-        <MobileBottomNav onOpenMenu={() => setIsMobileOpen(true)} />
+        {/* MOBILE BOTTOM NAVIGATION BAR (DENGAN KASIR BINTANG UTAMA DI TENGAH) */}
+        <MobileBottomNav onOpenMenu={() => setIsMenuSheetOpen(true)} />
       </div>
     </div>
   );

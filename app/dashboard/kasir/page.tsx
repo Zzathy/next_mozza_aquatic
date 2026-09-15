@@ -304,18 +304,12 @@ export default function CashierPage() {
         {/* TOP BAR HEADER */}
         <header className="px-4 lg:px-6 py-3.5 border-b border-gray-200 bg-white shadow-xs flex items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                KASIR MOZZA
-              </span>
-              <span className="text-xs font-medium text-gray-500 hidden sm:inline">
-                Mozza Aquatic
-              </span>
-            </div>
-            <h1 className="text-xl lg:text-2xl font-black text-gray-900 tracking-tight mt-0.5">
+            <h1 className="text-lg lg:text-2xl font-black text-gray-950 tracking-tight">
               Katalog Produk
             </h1>
+            <p className="text-xs text-gray-400 font-semibold hidden sm:block">
+              Pilih item untuk menambah pesanan kasir
+            </p>
           </div>
 
           <div className="flex items-center gap-2">

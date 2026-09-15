@@ -13,7 +13,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Mozza Aquatic - POS & Store Management",
   description: "Aplikasi Kasir dan Manajemen Toko Mozza Aquatic Banyuwangi",
-  manifest: "/manifest.webmanifest",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

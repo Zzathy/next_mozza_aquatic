@@ -392,8 +392,8 @@ export default function CashierPage() {
         </div>
 
         {/* GRID PRODUK (KARTU BESAR & TEKS SANGAT JELAS) */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
             {filteredProducts.map((product) => {
               const isOutOfStock = !product.isService && product.stock <= 0;
               const cartItem = cart.find((i) => i.product.id === product.id);
@@ -501,7 +501,7 @@ export default function CashierPage() {
       )}
 
       <div
-        className={`fixed top-0 bottom-0 right-0 z-40 lg:static w-full sm:w-[420px] xl:w-[460px] flex flex-col bg-white border-l border-gray-200 shrink-0 shadow-2xl lg:shadow-xl print:hidden transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 right-0 z-40 lg:static w-full sm:w-[400px] lg:w-[360px] xl:w-[440px] flex flex-col bg-white border-l border-gray-200 shrink-0 shadow-2xl lg:shadow-xl print:hidden transition-transform duration-300 ease-in-out ${
           isMobileCartOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         }`}
       >
@@ -704,33 +704,33 @@ export default function CashierPage() {
               </div>
             </div>
 
-            {/* QUICK NOMINAL BUTTONS (MUDAH DIKLIK) */}
+            {/* QUICK NOMINAL BUTTONS (MUDAH DIKLIK DI TOUCHSCREEN) */}
             <div className="grid grid-cols-4 gap-1.5 text-xs">
               <button
                 type="button"
                 onClick={setExactPayment}
-                className="py-1.5 px-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-bold border border-blue-200 transition-colors text-center"
+                className="h-10 px-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-extrabold border border-blue-200 transition-colors text-center active:scale-95 text-[11px] sm:text-xs"
               >
                 Uang Pas
               </button>
               <button
                 type="button"
                 onClick={() => setQuickNominal(50000)}
-                className="py-1.5 px-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold border border-gray-200 transition-colors text-center"
+                className="h-10 px-1 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold border border-gray-200 transition-colors text-center active:scale-95 text-[11px] sm:text-xs"
               >
                 50.000
               </button>
               <button
                 type="button"
                 onClick={() => setQuickNominal(100000)}
-                className="py-1.5 px-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold border border-gray-200 transition-colors text-center"
+                className="h-10 px-1 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold border border-gray-200 transition-colors text-center active:scale-95 text-[11px] sm:text-xs"
               >
                 100.000
               </button>
               <button
                 type="button"
                 onClick={() => setQuickNominal(200000)}
-                className="py-1.5 px-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold border border-gray-200 transition-colors text-center"
+                className="h-10 px-1 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold border border-gray-200 transition-colors text-center active:scale-95 text-[11px] sm:text-xs"
               >
                 200.000
               </button>

@@ -6,6 +6,8 @@ interface MigrationItem {
   quantity: number;
   buyPrice: number;
   sellPrice: number;
+  subTotal?: number;
+  totalCost?: number;
 }
 
 export async function POST(req: Request) {
@@ -26,8 +28,10 @@ export async function POST(req: Request) {
     let totalSaleAmount = 0;
 
     items.forEach((item: MigrationItem) => {
-      totalPurchaseCost += item.buyPrice * item.quantity;
-      totalSaleAmount += item.sellPrice * item.quantity;
+      const itemSaleTotal = item.subTotal !== undefined ? Number(item.subTotal) : Number(item.sellPrice) * Number(item.quantity);
+      const itemCostTotal = item.totalCost !== undefined ? Number(item.totalCost) : Number(item.buyPrice) * Number(item.quantity);
+      totalPurchaseCost += itemCostTotal;
+      totalSaleAmount += itemSaleTotal;
     });
 
     const result = await prisma.$transaction(async (tx) => {
@@ -39,16 +43,6 @@ export async function POST(req: Request) {
           finalAmount: totalPurchaseCost,
           paidAmount: totalPurchaseCost,
           paymentStatus: "Lunas",
-          createdAt: pastDate,
-        },
-      });
-
-      await tx.expense.create({
-        data: {
-          category: "Pembelian Stok",
-          amount: totalPurchaseCost,
-          description: `Kulakan Migrasi Historis ID: ${purchase.id}`,
-          transactionDate: pastDate,
           createdAt: pastDate,
         },
       });
@@ -78,14 +72,17 @@ export async function POST(req: Request) {
       });
 
       // 5. SALE ITEM
-      const saleItemsData = items.map((item: MigrationItem) => ({
-        saleId: sale.id,
-        productId: item.productId,
-        quantity: item.quantity,
-        unitPrice: item.sellPrice,
-        costPrice: item.buyPrice,
-        subTotal: item.sellPrice * item.quantity,
-      }));
+      const saleItemsData = items.map((item: MigrationItem) => {
+        const itemSubTotal = item.subTotal !== undefined ? Number(item.subTotal) : Number(item.sellPrice) * Number(item.quantity);
+        return {
+          saleId: sale.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: item.sellPrice,
+          costPrice: item.buyPrice,
+          subTotal: itemSubTotal,
+        };
+      });
 
       await tx.saleItem.createMany({ data: saleItemsData });
 

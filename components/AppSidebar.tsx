@@ -12,7 +12,6 @@ import {
   ShoppingCart,
   CreditCard,
   AlertTriangle,
-  ArrowLeftRight,
   LogOut,
   UserCheck,
   ShieldAlert,
@@ -70,12 +69,6 @@ export default function AppSidebar({ onCloseMobile }: AppSidebarProps) {
       name: "Pengeluaran",
       href: "/dashboard/pengeluaran",
       icon: CreditCard,
-      adminOnly: true,
-    },
-    {
-      name: "Migrasi Penjualan",
-      href: "/dashboard/migrasi-penjualan",
-      icon: ArrowLeftRight,
       adminOnly: true,
     },
   ];

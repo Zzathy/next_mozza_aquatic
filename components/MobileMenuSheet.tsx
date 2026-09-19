@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   CreditCard,
   AlertTriangle,
-  ArrowLeftRight,
   LayoutDashboard,
   FileText,
   MonitorSmartphone,
@@ -88,14 +87,6 @@ export default function MobileMenuSheet({ isOpen, onClose }: MobileMenuSheetProp
       href: "/dashboard/pengeluaran",
       icon: CreditCard,
       color: "bg-rose-50 text-rose-600 border border-rose-200",
-      adminOnly: true,
-    },
-    {
-      name: "Time Machine",
-      desc: "Migrasi nota masa lalu",
-      href: "/dashboard/migrasi-penjualan",
-      icon: ArrowLeftRight,
-      color: "bg-purple-50 text-purple-600 border border-purple-200",
       adminOnly: true,
     },
   ];

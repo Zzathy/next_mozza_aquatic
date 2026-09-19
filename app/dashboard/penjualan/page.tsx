@@ -45,6 +45,7 @@ interface SaleItem {
   subTotal: number;
   product: {
     name: string;
+    brand?: string | null;
     isService: boolean;
   };
 }
@@ -502,8 +503,15 @@ export default function SalesPage() {
                       {selectedSale.saleItems.map((item) => (
                         <TableRow key={item.id} className="border-b border-gray-100">
                           <TableCell className="py-3 px-3">
-                            <div className="font-bold text-sm text-gray-900">
-                              {item.product.name}
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {item.product.brand && (
+                                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                                  {item.product.brand}
+                                </span>
+                              )}
+                              <span className="font-bold text-sm text-gray-900">
+                                {item.product.name}
+                              </span>
                             </div>
                             {item.product.isService && (
                               <span className="inline-block mt-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">

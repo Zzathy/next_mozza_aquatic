@@ -45,6 +45,7 @@ import { useToast } from "@/components/ui/toast-context";
 interface Product {
   id: number;
   name: string;
+  brand?: string | null;
   stock: number;
   isService: boolean;
 }
@@ -57,7 +58,7 @@ interface DamageLog {
   totalCost: number;
   notes: string | null;
   createdAt: string;
-  product: { name: string };
+  product: { name: string; brand?: string | null };
   expense?: { amount: number; description: string } | null;
 }
 
@@ -194,6 +195,8 @@ export default function DamageLogPage() {
       const matchSearch =
         searchQuery === "" ||
         log.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (log.product.brand &&
+          log.product.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (log.notes && log.notes.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchStatus && matchSearch;
     });
@@ -281,7 +284,7 @@ export default function DamageLogPage() {
                   <SelectContent>
                     {products.map((p) => (
                       <SelectItem key={p.id} value={String(p.id)}>
-                        {p.name} (Tersedia: {p.stock})
+                        {p.brand ? `[${p.brand}] ` : ""}{p.name} (Tersedia: {p.stock})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -503,8 +506,17 @@ export default function DamageLogPage() {
                         year: "numeric",
                       })}
                     </TableCell>
-                    <TableCell className="py-3.5 px-4 font-bold text-sm text-gray-900">
-                      {log.product.name}
+                    <TableCell className="py-3.5 px-4">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {log.product.brand && (
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                            {log.product.brand}
+                          </span>
+                        )}
+                        <span className="font-bold text-sm text-gray-900">
+                          {log.product.name}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="py-3.5 px-4 text-center font-bold text-sm text-rose-600 font-mono">
                       {log.quantity} pcs

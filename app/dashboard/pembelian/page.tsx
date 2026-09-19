@@ -47,6 +47,7 @@ import { useToast } from "@/components/ui/toast-context";
 interface Product {
   id: number;
   name: string;
+  brand?: string | null;
 }
 
 interface PurchaseItem {
@@ -413,7 +414,7 @@ export default function PurchasePage() {
                               <SelectContent>
                                 {products.map((p) => (
                                   <SelectItem key={p.id} value={String(p.id)}>
-                                    {p.name}
+                                    {p.brand ? `[${p.brand}] ` : ""}{p.name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

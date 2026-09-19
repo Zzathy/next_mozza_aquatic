@@ -32,6 +32,7 @@ interface Category {
 interface Product {
   id: number;
   name: string;
+  brand?: string | null;
   price: number;
   category?: Category;
   categoryId: number;
@@ -204,7 +205,11 @@ export default function CashierPage() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      const matchQuery = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase();
+      const matchQuery =
+        p.name.toLowerCase().includes(q) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.category?.name && p.category.name.toLowerCase().includes(q));
       const matchCategory =
         selectedCategory === "all" || p.categoryId === selectedCategory;
       return matchQuery && matchCategory;
@@ -257,7 +262,9 @@ export default function CashierPage() {
         date: new Date().toLocaleString("id-ID"),
         customer: customerName || null,
         items: cart.map((c) => ({
-          name: c.product.name,
+          name: c.product.brand
+            ? `${c.product.brand} ${c.product.name}`
+            : c.product.name,
           qty: c.quantity,
           price: c.product.price,
           subTotal: c.product.price * c.quantity,
@@ -421,9 +428,16 @@ export default function CashierPage() {
                   <div>
                     {/* TOP INFO & BADGE */}
                     <div className="flex items-center justify-between gap-1 mb-2">
-                      <span className="text-xs uppercase font-extrabold tracking-wider text-gray-600 truncate">
-                        {product.category?.name || "Umum"}
-                      </span>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {product.brand && (
+                          <span className="text-[11px] font-black px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-800 border border-blue-200 truncate">
+                            {product.brand}
+                          </span>
+                        )}
+                        <span className="text-xs uppercase font-extrabold tracking-wider text-gray-500 truncate">
+                          {product.category?.name || "Umum"}
+                        </span>
+                      </div>
                       {product.isService ? (
                         <span className="text-xs font-bold bg-cyan-100 text-cyan-800 px-2 py-0.5 rounded-md">
                           Jasa
@@ -567,9 +581,16 @@ export default function CashierPage() {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-sm text-gray-900 truncate">
-                        {item.product.name}
-                      </h4>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {item.product.brand && (
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                            {item.product.brand}
+                          </span>
+                        )}
+                        <h4 className="font-bold text-sm text-gray-900 truncate">
+                          {item.product.name}
+                        </h4>
+                      </div>
                       <div className="text-xs font-semibold text-gray-500 mt-0.5">
                         Rp {item.product.price.toLocaleString("id-ID")} / item
                       </div>

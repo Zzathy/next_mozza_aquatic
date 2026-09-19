@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         saleItems: {
           include: {
             product: {
-              select: { name: true, isService: true },
+              select: { name: true, brand: true, isService: true },
             },
           },
         },

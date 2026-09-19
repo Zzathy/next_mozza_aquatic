@@ -11,6 +11,7 @@ export async function PUT(
     const body = await request.json();
     const {
       name,
+      brand,
       categoryId,
       description,
       price,
@@ -30,9 +31,21 @@ export async function PUT(
       );
     }
 
+    const cleanBrand =
+      brand !== undefined
+        ? brand
+          ? String(brand).trim()
+          : null
+        : existingProduct.brand;
     let newSlug = existingProduct.slug;
-    if (name && name !== existingProduct.name) {
-      newSlug = name
+
+    if (
+      (name && name !== existingProduct.name) ||
+      (brand !== undefined && cleanBrand !== existingProduct.brand)
+    ) {
+      const targetName = name || existingProduct.name;
+      const fullNameForSlug = cleanBrand ? `${cleanBrand} ${targetName}` : targetName;
+      newSlug = fullNameForSlug
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)+/g, "");
@@ -43,7 +56,7 @@ export async function PUT(
 
       if (checkSlug && checkSlug.id !== parseInt(id)) {
         return NextResponse.json(
-          { success: false, message: "Produk dengan nama ini sudah ada" },
+          { success: false, message: "Produk dengan nama dan merk ini sudah ada" },
           { status: 409 },
         );
       }
@@ -53,6 +66,7 @@ export async function PUT(
       where: { id: parseInt(id) },
       data: {
         name: name || existingProduct.name,
+        brand: cleanBrand,
         slug: newSlug,
         categoryId: categoryId
           ? parseInt(categoryId)

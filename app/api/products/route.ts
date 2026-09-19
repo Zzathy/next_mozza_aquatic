@@ -45,6 +45,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       name,
+      brand,
       categoryId,
       description,
       price,
@@ -60,7 +61,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const slug = name
+    const cleanBrand = brand ? String(brand).trim() : null;
+    const fullNameForSlug = cleanBrand ? `${cleanBrand} ${name}` : name;
+    const slug = fullNameForSlug
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
@@ -81,6 +84,7 @@ export async function POST(request: Request) {
     const newProduct = await prisma.product.create({
       data: {
         name: name,
+        brand: cleanBrand,
         slug: slug,
         categoryId: parseInt(categoryId),
         description: description || null,

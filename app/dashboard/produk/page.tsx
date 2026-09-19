@@ -12,6 +12,9 @@ import {
   Sparkles,
   Tag,
   AlertCircle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +51,7 @@ interface Category {
 interface Product {
   id: number;
   name: string;
+  brand?: string | null;
   category?: Category;
   categoryId: number;
   price: number;
@@ -55,6 +59,9 @@ interface Product {
   description: string | null;
   isService?: boolean;
 }
+
+type SortField = "name" | "brand" | "price" | "category" | "minStock";
+type SortOrder = "asc" | "desc";
 
 export default function ProductPage() {
   const { success, error } = useToast();
@@ -66,10 +73,15 @@ export default function ProductPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedBrandFilter, setSelectedBrandFilter] = useState<string>("all");
+
+  const [sortField, setSortField] = useState<SortField | null>("brand");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
   const [name, setName] = useState("");
+  const [brand, setBrand] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [price, setPrice] = useState("");
   const [minStock, setMinStock] = useState("");
@@ -117,6 +129,7 @@ export default function ProductPage() {
   const resetForm = () => {
     setEditingProductId(null);
     setName("");
+    setBrand("");
     setCategoryId("");
     setPrice("");
     setMinStock("");
@@ -157,11 +170,12 @@ export default function ProductPage() {
 
     try {
       const payload = {
-        name,
+        name: name.trim(),
+        brand: brand.trim() || null,
         categoryId: Number(categoryId),
         price: Number(price),
         minStock: Number(minStock),
-        description,
+        description: description.trim() || null,
       };
 
       const url = editingProductId
@@ -183,7 +197,11 @@ export default function ProductPage() {
       await refreshProducts();
       setIsProductModalOpen(false);
       resetForm();
-      success(editingProductId ? "Data produk berhasil diperbarui!" : "Produk baru berhasil disimpan!");
+      success(
+        editingProductId
+          ? "Data produk berhasil diperbarui!"
+          : "Produk baru berhasil disimpan!",
+      );
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {
@@ -199,6 +217,7 @@ export default function ProductPage() {
   const handleEditClick = (product: Product) => {
     setEditingProductId(product.id);
     setName(product.name);
+    setBrand(product.brand || "");
     setCategoryId(String(product.categoryId || product.category?.id || ""));
     setPrice(String(product.price));
     setMinStock(String(product.minStock));
@@ -223,17 +242,101 @@ export default function ProductPage() {
     }
   };
 
+  const availableBrands = useMemo(() => {
+    const brandsSet = new Set<string>();
+    products.forEach((p) => {
+      if (p.brand && p.brand.trim() !== "") {
+        brandsSet.add(p.brand.trim());
+      }
+    });
+    return Array.from(brandsSet).sort();
+  }, [products]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
   const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
-      const matchQuery = p.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+    let result = products.filter((p) => {
+      const q = searchQuery.toLowerCase();
+      const matchQuery =
+        p.name.toLowerCase().includes(q) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.category?.name && p.category.name.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q));
+
       const matchCategory =
         selectedCategory === "all" ||
         String(p.categoryId || p.category?.id) === selectedCategory;
-      return matchQuery && matchCategory;
+
+      const matchBrand =
+        selectedBrandFilter === "all" ||
+        (selectedBrandFilter === "no-brand" && (!p.brand || p.brand.trim() === "")) ||
+        p.brand?.toLowerCase() === selectedBrandFilter.toLowerCase();
+
+      return matchQuery && matchCategory && matchBrand;
     });
-  }, [products, searchQuery, selectedCategory]);
+
+    if (sortField) {
+      result = [...result].sort((a, b) => {
+        if (sortField === "brand") {
+          const aVal = a.brand || "";
+          const bVal = b.brand || "";
+          if (!aVal && bVal) return 1;
+          if (aVal && !bVal) return -1;
+          return sortOrder === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
+        if (sortField === "name") {
+          return sortOrder === "asc"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+        }
+        if (sortField === "category") {
+          const aVal = a.category?.name || "";
+          const bVal = b.category?.name || "";
+          return sortOrder === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
+        if (sortField === "price") {
+          return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+        }
+        if (sortField === "minStock") {
+          return sortOrder === "asc"
+            ? a.minStock - b.minStock
+            : b.minStock - a.minStock;
+        }
+        return 0;
+      });
+    }
+
+    return result;
+  }, [
+    products,
+    searchQuery,
+    selectedCategory,
+    selectedBrandFilter,
+    sortField,
+    sortOrder,
+  ]);
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 ml-1 inline opacity-60" />;
+    }
+    return sortOrder === "asc" ? (
+      <ArrowUp className="w-3.5 h-3.5 text-blue-600 ml-1 inline stroke-[2.5]" />
+    ) : (
+      <ArrowDown className="w-3.5 h-3.5 text-blue-600 ml-1 inline stroke-[2.5]" />
+    );
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-5 sm:space-y-6">
@@ -253,7 +356,7 @@ export default function ProductPage() {
             Katalog & Master Produk
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Atur nama, kategori, harga jual, dan batas peringatan stok minimal.
+            Atur merk, nama model, kategori, harga jual, dan batas peringatan stok minimal.
           </p>
         </div>
 
@@ -280,30 +383,44 @@ export default function ProductPage() {
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
                 {editingProductId
-                  ? "Perbarui informasi produk dan harga jual di bawah."
+                  ? "Perbarui informasi produk, merk, dan harga jual di bawah."
                   : "Tambahkan produk baru ke dalam database master Mozza Aquatic."}
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleProductSubmit} className="space-y-4 pt-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs font-bold text-gray-700">
-                  Nama Produk
-                </Label>
-                <Input
-                  id="name"
-                  placeholder="Misal: Manfish Platinum, Pakan Agaru, Anubias"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-10 text-sm rounded-xl font-medium"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="brand" className="text-xs font-bold text-gray-700">
+                    Merk / Brand (Opsional)
+                  </Label>
+                  <Input
+                    id="brand"
+                    placeholder="Misal: Kandila, Takari, Agaru"
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="h-10 text-sm rounded-xl font-medium"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-xs font-bold text-gray-700">
+                    Nama / Model Produk <span className="text-rose-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="Misal: ECO-103, Floating M, Guppy"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-10 text-sm rounded-xl font-medium"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
                   <Label className="text-xs font-bold text-gray-700">
-                    Kategori Produk
+                    Kategori Produk <span className="text-rose-500">*</span>
                   </Label>
                   <button
                     type="button"
@@ -335,7 +452,7 @@ export default function ProductPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="price" className="text-xs font-bold text-gray-700">
-                    Harga Jual (Rp)
+                    Harga Jual (Rp) <span className="text-rose-500">*</span>
                   </Label>
                   <Input
                     id="price"
@@ -371,7 +488,7 @@ export default function ProductPage() {
                 </Label>
                 <Input
                   id="description"
-                  placeholder="Catatan pakan, ukuran ikan, atau garansi"
+                  placeholder="Catatan pakan, watt mesin, atau garansi"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="h-10 text-sm rounded-xl font-medium"
@@ -451,7 +568,7 @@ export default function ProductPage() {
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Cari produk..."
+            placeholder="Cari model atau merk..."
             className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -466,36 +583,63 @@ export default function ProductPage() {
           )}
         </div>
 
-        {/* KATEGORI FILTER */}
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setSelectedCategory("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-              selectedCategory === "all"
-                ? "bg-[#2563EB] text-white shadow-xs"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            Semua
-          </button>
-
-          {categories.map((cat) => {
-            const isSelected = selectedCategory === String(cat.id);
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(String(cat.id))}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                  isSelected
-                    ? "bg-[#2563EB] text-white shadow-xs"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+        {/* KATEGORI & MERK FILTER */}
+        <div className="flex items-center gap-2.5 w-full md:w-auto overflow-x-auto no-scrollbar">
+          {/* FILTER MERK DROPDOWN */}
+          {availableBrands.length > 0 && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-xs font-bold text-gray-400 hidden sm:inline">Merk:</span>
+              <Select
+                value={selectedBrandFilter}
+                onValueChange={(val) => setSelectedBrandFilter(val || "all")}
               >
-                {cat.name}
-              </button>
-            );
-          })}
+                <SelectTrigger className="h-9 text-xs font-extrabold rounded-xl w-[130px] bg-gray-50 border-gray-200">
+                  <SelectValue placeholder="Semua Merk" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Merk</SelectItem>
+                  <SelectItem value="no-brand">Tanpa Merk</SelectItem>
+                  {availableBrands.map((b) => (
+                    <SelectItem key={b} value={b}>
+                      {b}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* KATEGORI BUTTONS */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setSelectedCategory("all")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                selectedCategory === "all"
+                  ? "bg-[#2563EB] text-white shadow-xs"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Semua
+            </button>
+
+            {categories.map((cat) => {
+              const isSelected = selectedCategory === String(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(String(cat.id))}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                    isSelected
+                      ? "bg-[#2563EB] text-white shadow-xs"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -504,17 +648,35 @@ export default function ProductPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
-                Nama Produk
+              <TableHead
+                onClick={() => handleSort("name")}
+                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+              >
+                Nama / Model {renderSortIcon("name")}
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
-                Kategori
+              <TableHead
+                onClick={() => handleSort("brand")}
+                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+              >
+                Merk {renderSortIcon("brand")}
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
-                Harga Jual
+              <TableHead
+                onClick={() => handleSort("category")}
+                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+              >
+                Kategori {renderSortIcon("category")}
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
-                Min. Stok
+              <TableHead
+                onClick={() => handleSort("price")}
+                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right cursor-pointer select-none hover:text-blue-600 transition-colors"
+              >
+                Harga Jual {renderSortIcon("price")}
+              </TableHead>
+              <TableHead
+                onClick={() => handleSort("minStock")}
+                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center cursor-pointer select-none hover:text-blue-600 transition-colors"
+              >
+                Min. Stok {renderSortIcon("minStock")}
               </TableHead>
               <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[120px]">
                 Aksi
@@ -536,6 +698,18 @@ export default function ProductPage() {
                       <div className="text-xs text-gray-400 truncate max-w-xs mt-0.5">
                         {product.description}
                       </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4">
+                    {product.brand ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-black bg-blue-50 text-blue-700 border border-blue-200">
+                        <Tag className="w-3 h-3 text-blue-600" />
+                        {product.brand}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400 font-medium italic">
+                        -
+                      </span>
                     )}
                   </TableCell>
                   <TableCell className="py-3.5 px-4">
@@ -573,13 +747,13 @@ export default function ProductPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-16 text-gray-400">
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
                   <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
                   <p className="font-bold text-gray-700 text-base">
                     Tidak ada produk ditemukan
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    Coba sesuaikan kata kunci pencarian atau ubah filter kategori.
+                    Coba sesuaikan kata kunci pencarian atau ubah filter merk / kategori.
                   </p>
                 </TableCell>
               </TableRow>

@@ -48,6 +48,7 @@ interface Category {
 interface Product {
   id: number;
   name: string;
+  brand?: string | null;
   price: number;
   stock?: number;
   category?: Category;
@@ -528,7 +529,7 @@ export default function SalesMigrationPage() {
                               <SelectContent>
                                 {products.map((p) => (
                                   <SelectItem key={p.id} value={String(p.id)}>
-                                    {p.name}
+                                    {p.brand ? `[${p.brand}] ` : ""}{p.name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

@@ -6,7 +6,7 @@ export async function GET() {
     const logs = await prisma.damageLog.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        product: { select: { name: true } },
+        product: { select: { name: true, brand: true } },
         expense: { select: { amount: true, description: true } },
       },
     });

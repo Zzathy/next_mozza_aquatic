@@ -39,7 +39,8 @@ async function main() {
   });
   const p3 = await prisma.product.create({
     data: {
-      name: "Takari S",
+      name: "S",
+      brand: "Takari",
       slug: "takari-s",
       categoryId: catFood.id,
       price: 5000,
@@ -47,7 +48,8 @@ async function main() {
   });
   const p4 = await prisma.product.create({
     data: {
-      name: "Agaru Floating",
+      name: "Floating",
+      brand: "Agaru",
       slug: "agaru-floating",
       categoryId: catFood.id,
       price: 10000,
@@ -55,7 +57,8 @@ async function main() {
   });
   const p5 = await prisma.product.create({
     data: {
-      name: "Kandila Z-20",
+      name: "Z-20",
+      brand: "Kandila",
       slug: "kandila-z-20",
       categoryId: catTool.id,
       price: 40000,
@@ -63,7 +66,8 @@ async function main() {
   });
   const p6 = await prisma.product.create({
     data: {
-      name: "Kandila ECO-103",
+      name: "ECO-103",
+      brand: "Kandila",
       slug: "kandila-eco-103",
       categoryId: catTool.id,
       price: 85000,

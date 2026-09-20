@@ -59,6 +59,7 @@ export default function CashierPage() {
   const [notes, setNotes] = useState("");
   const [discount, setDiscount] = useState("0");
   const [paidAmount, setPaidAmount] = useState("0");
+  const [paymentMethod, setPaymentMethod] = useState<"Tunai" | "QRIS">("Tunai");
 
   const [activeReceipt, setActiveReceipt] = useState<ReceiptData | null>(null);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
@@ -188,6 +189,7 @@ export default function CashierPage() {
     setNotes("");
     setDiscount("0");
     setPaidAmount("0");
+    setPaymentMethod("Tunai");
   };
 
   const subTotal = useMemo(() => {
@@ -236,6 +238,7 @@ export default function CashierPage() {
         customerName,
         customerPhone,
         notes,
+        paymentMethod,
         discount: Number(discount),
         paidAmount: Number(paidAmount),
         items: cart.map((c) => ({
@@ -261,6 +264,7 @@ export default function CashierPage() {
         invoice: data.data?.invoice || "MIG-S-PENDING",
         date: new Date().toLocaleString("id-ID"),
         customer: customerName || null,
+        paymentMethod,
         items: cart.map((c) => ({
           name: c.product.brand
             ? `${c.product.brand} ${c.product.name}`
@@ -291,6 +295,7 @@ export default function CashierPage() {
       setNotes("");
       setDiscount("0");
       setPaidAmount("0");
+      setPaymentMethod("Tunai");
       setIsMobileCartOpen(false);
       success("Transaksi berhasil diproses & nota dicetak!");
     } catch (error: unknown) {
@@ -707,6 +712,35 @@ export default function CashierPage() {
 
           {/* INPUT PEMBAYARAN */}
           <div className="pt-2 border-t border-gray-100 space-y-2">
+            {/* TOGGLE METODE PEMBAYARAN */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-gray-100 border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("Tunai")}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  paymentMethod === "Tunai"
+                    ? "bg-white text-gray-900 shadow-xs"
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                💵 Tunai
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod("QRIS");
+                  setPaidAmount(String(finalAmount));
+                }}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  paymentMethod === "QRIS"
+                    ? "bg-[#2563EB] text-white shadow-xs"
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                📱 QRIS / Transfer
+              </button>
+            </div>
+
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-extrabold text-gray-800 flex items-center gap-1.5">
                 <Banknote className="w-4 h-4 text-emerald-600" />

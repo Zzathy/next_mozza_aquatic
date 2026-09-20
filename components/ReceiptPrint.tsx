@@ -15,6 +15,7 @@ export interface ReceiptData {
   total: number;
   paid: number;
   change: number;
+  paymentMethod?: string;
   notes?: string | null;
 }
 
@@ -94,7 +95,7 @@ export default function ReceiptPrint({ data }: { data: ReceiptData | null }) {
           <span>Rp {data.total.toLocaleString("id-ID")}</span>
         </div>
         <div className="flex justify-between mb-1 font-normal">
-          <span>TUNAI</span>
+          <span>{data.paymentMethod ? data.paymentMethod.toUpperCase() : "TUNAI"}</span>
           <span>Rp {data.paid.toLocaleString("id-ID")}</span>
         </div>
         <div className="flex justify-between">

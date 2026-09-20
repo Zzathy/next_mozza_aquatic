@@ -82,6 +82,7 @@ model Sale{
   discount Int @default(0)
   finalAmount Int @default(0)
   paymentStatus String @default("Lunas")
+  paymentMethod String @default("Tunai")
   paidAmount Int @default(0)
   dueAmount Int @default(0)
   createdAt DateTime @default(now())

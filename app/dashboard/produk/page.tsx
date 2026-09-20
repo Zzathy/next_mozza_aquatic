@@ -57,6 +57,7 @@ interface Product {
   price: number;
   minStock: number;
   description: string | null;
+  isActive?: boolean;
   isService?: boolean;
 }
 
@@ -86,6 +87,8 @@ export default function ProductPage() {
   const [price, setPrice] = useState("");
   const [minStock, setMinStock] = useState("");
   const [description, setDescription] = useState("");
+  const [isService, setIsService] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   const [newCategoryName, setNewCategoryName] = useState("");
 
@@ -134,6 +137,8 @@ export default function ProductPage() {
     setPrice("");
     setMinStock("");
     setDescription("");
+    setIsService(false);
+    setIsActive(true);
   };
 
   const handleCategorySubmit = async (e: React.FormEvent) => {
@@ -176,6 +181,8 @@ export default function ProductPage() {
         price: Number(price),
         minStock: Number(minStock),
         description: description.trim() || null,
+        isService,
+        isActive,
       };
 
       const url = editingProductId
@@ -222,6 +229,8 @@ export default function ProductPage() {
     setPrice(String(product.price));
     setMinStock(String(product.minStock));
     setDescription(product.description || "");
+    setIsService(Boolean(product.isService));
+    setIsActive(product.isActive !== false);
     setIsProductModalOpen(true);
   };
 
@@ -495,6 +504,42 @@ export default function ProductPage() {
                 />
               </div>
 
+              {/* TOGGLE JASA / LAYANAN & STATUS AKTIF */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <label className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-200 cursor-pointer hover:bg-gray-100/70 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={isService}
+                    onChange={(e) => setIsService(e.target.checked)}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="text-xs font-bold text-gray-900 block">Jasa / Layanan</span>
+                    <span className="text-[11px] text-gray-500 font-medium">Tanpa stok fisik (setting/servis)</span>
+                  </div>
+                </label>
+
+                {editingProductId && (
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 border border-gray-200">
+                    <div>
+                      <span className="text-xs font-bold text-gray-900 block">Status Produk</span>
+                      <span className="text-[11px] text-gray-500 font-medium">Aktif untuk dijual</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsActive(!isActive)}
+                      className={`px-3 py-1 rounded-xl text-xs font-extrabold transition-all ${
+                        isActive
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          : "bg-gray-200 text-gray-600 border border-gray-300"
+                      }`}
+                    >
+                      {isActive ? "Aktif" : "Nonaktif"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end gap-2 pt-3 border-t">
                 <Button
                   type="button"
@@ -691,8 +736,20 @@ export default function ProductPage() {
                   className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
                 >
                   <TableCell className="py-3.5 px-4">
-                    <div className="font-bold text-sm text-gray-900">
-                      {product.name}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-sm text-gray-900">
+                        {product.name}
+                      </span>
+                      {product.isService && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300">
+                          Jasa
+                        </span>
+                      )}
+                      {product.isActive === false && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 border border-gray-300">
+                          Nonaktif
+                        </span>
+                      )}
                     </div>
                     {product.description && (
                       <div className="text-xs text-gray-400 truncate max-w-xs mt-0.5">

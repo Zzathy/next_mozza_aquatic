@@ -18,10 +18,20 @@ export async function GET(req: Request) {
 
     const sales = await prisma.sale.findMany({
       where: { createdAt: { gte: startDate, lte: endDate } },
-      select: { id: true, createdAt: true, finalAmount: true },
+      select: {
+        id: true,
+        createdAt: true,
+        finalAmount: true,
+        paidAmount: true,
+        paymentMethod: true,
+      },
     });
 
     const totalOmset = sales.reduce((sum, sale) => sum + sale.finalAmount, 0);
+    const totalUangMasukPenjualan = sales.reduce(
+      (sum, sale) => sum + (sale.paidAmount || 0),
+      0,
+    );
     const totalTransaksi = sales.length;
 
     const expenses = await prisma.expense.aggregate({
@@ -32,9 +42,10 @@ export async function GET(req: Request) {
 
     const purchases = await prisma.purchase.aggregate({
       where: { createdAt: { gte: startDate, lte: endDate } },
-      _sum: { finalAmount: true },
+      _sum: { finalAmount: true, paidAmount: true },
     });
     const totalBelanjaStok = purchases._sum.finalAmount || 0;
+    const totalKasKeluarStok = purchases._sum.paidAmount || 0;
 
     const saleItems = await prisma.saleItem.findMany({
       where: { sale: { createdAt: { gte: startDate, lte: endDate } } },
@@ -61,8 +72,8 @@ export async function GET(req: Request) {
 
     const labaKotor = totalOmset - totalModal;
     const labaBersih = labaKotor - totalPengeluaran;
-    const uangMasuk = totalOmset;
-    const uangKeluar = totalBelanjaStok + totalPengeluaran;
+    const uangMasuk = totalUangMasukPenjualan;
+    const uangKeluar = totalKasKeluarStok + totalPengeluaran;
     const selisihKas = uangMasuk - uangKeluar;
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();

@@ -62,6 +62,7 @@ interface Sale {
   paidAmount: number;
   dueAmount: number;
   paymentStatus: string;
+  paymentMethod?: string;
   createdAt: string;
   saleItems: SaleItem[];
 }
@@ -132,6 +133,39 @@ export default function SalesPage() {
       } else {
         showError("Gagal membatalkan nota transaksi");
       }
+    }
+  };
+
+  const handleSettleDebt = async (id: number) => {
+    if (!confirm("Konfirmasi pelunasan sisa tagihan untuk nota ini?")) return;
+
+    try {
+      const res = await fetch(`/api/sales/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Gagal memproses pelunasan");
+
+      await loadSales(searchQuery);
+      if (selectedSale?.id === id) {
+        setSelectedSale((prev) =>
+          prev
+            ? {
+                ...prev,
+                paidAmount: prev.finalAmount,
+                dueAmount: 0,
+                paymentStatus: "Lunas",
+              }
+            : null,
+        );
+      }
+      success("Pelunasan piutang berhasil dicatat!");
+    } catch (error: unknown) {
+      if (error instanceof Error) showError(error.message);
+      else showError("Gagal memproses pelunasan");
     }
   };
 
@@ -394,8 +428,13 @@ export default function SalesPage() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="py-3.5 px-4 text-right font-black text-sm text-gray-950 font-mono">
-                    Rp {sale.finalAmount.toLocaleString("id-ID")}
+                  <TableCell className="py-3.5 px-4 text-right">
+                    <div className="font-black text-sm text-gray-950 font-mono">
+                      Rp {sale.finalAmount.toLocaleString("id-ID")}
+                    </div>
+                    <span className="text-[10px] font-semibold text-gray-400">
+                      {sale.paymentMethod || "Tunai"}
+                    </span>
                   </TableCell>
                   <TableCell className="py-3.5 px-4 text-center">
                     {getStatusBadge(sale.paymentStatus)}
@@ -559,17 +598,33 @@ export default function SalesPage() {
 
                   <div className="border-t border-gray-200 pt-2 mt-2 space-y-1">
                     <div className="flex justify-between text-gray-600 text-xs">
+                      <span>Metode Bayar:</span>
+                      <span className="font-bold text-gray-900">
+                        {selectedSale.paymentMethod || "Tunai"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-600 text-xs">
                       <span>Uang Diterima:</span>
                       <span className="font-mono font-bold text-gray-900">
                         Rp {selectedSale.paidAmount.toLocaleString("id-ID")}
                       </span>
                     </div>
                     {selectedSale.dueAmount > 0 && (
-                      <div className="flex justify-between font-bold text-xs text-rose-600 bg-rose-50 p-2 rounded-xl border border-rose-200">
-                        <span>Sisa Kekurangan:</span>
-                        <span className="font-mono">
-                          Rp {selectedSale.dueAmount.toLocaleString("id-ID")}
-                        </span>
+                      <div className="space-y-2 pt-1">
+                        <div className="flex justify-between font-bold text-xs text-rose-600 bg-rose-50 p-2 rounded-xl border border-rose-200">
+                          <span>Sisa Kekurangan:</span>
+                          <span className="font-mono">
+                            Rp {selectedSale.dueAmount.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => handleSettleDebt(selectedSale.id)}
+                          className="w-full h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Lunasi Sisa Rp {selectedSale.dueAmount.toLocaleString("id-ID")}</span>
+                        </Button>
                       </div>
                     )}
                   </div>

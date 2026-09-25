@@ -98,10 +98,17 @@ export default function ReceiptPrint({ data }: { data: ReceiptData | null }) {
           <span>{data.paymentMethod ? data.paymentMethod.toUpperCase() : "TUNAI"}</span>
           <span>Rp {data.paid.toLocaleString("id-ID")}</span>
         </div>
-        <div className="flex justify-between">
-          <span>KEMBALI</span>
-          <span>Rp {data.change.toLocaleString("id-ID")}</span>
-        </div>
+        {data.total > data.paid ? (
+          <div className="flex justify-between mb-1 text-black font-black">
+            <span>SISA KURANG (DP)</span>
+            <span>Rp {(data.total - data.paid).toLocaleString("id-ID")}</span>
+          </div>
+        ) : (
+          <div className="flex justify-between">
+            <span>KEMBALI</span>
+            <span>Rp {data.change.toLocaleString("id-ID")}</span>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-dashed border-black my-2"></div>

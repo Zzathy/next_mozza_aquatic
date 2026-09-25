@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     });
 
     let csvContent =
-      "ID Transaksi,Tanggal,Pelanggan,Total Belanja,Status Pembayaran,Catatan,Daftar Item\n";
+      "ID Transaksi,Tanggal,Pelanggan,Metode Bayar,Total Belanja,Dibayar,Sisa Kurang (Hutang),Status,Catatan,Daftar Item\n";
 
     sales.forEach((sale) => {
       const dateStr = new Date(sale.createdAt).toLocaleString("id-ID");
@@ -25,14 +25,20 @@ export async function GET(request: Request) {
       const notes = sale.notes ? sale.notes.replace(/,/g, " ") : "-";
 
       const itemsList = sale.saleItems
-        .map((i) => `${i.product.name} (${i.quantity}x)`)
+        .map((i) => {
+          const brandPrefix = i.product.brand ? `[${i.product.brand}] ` : "";
+          return `${brandPrefix}${i.product.name} (${i.quantity}x)`;
+        })
         .join(" | ");
 
       const row = [
         `"${sale.invoiceNumber}"`,
         `"${dateStr}"`,
         `"${customer}"`,
+        `"${sale.paymentMethod || "Tunai"}"`,
         sale.finalAmount,
+        sale.paidAmount,
+        sale.dueAmount,
         `"${sale.paymentStatus}"`,
         `"${notes}"`,
         `"${itemsList}"`,

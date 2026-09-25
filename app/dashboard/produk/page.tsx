@@ -56,12 +56,13 @@ interface Product {
   categoryId: number;
   price: number;
   minStock: number;
+  stock?: number;
   description: string | null;
   isActive?: boolean;
   isService?: boolean;
 }
 
-type SortField = "name" | "brand" | "price" | "category" | "minStock";
+type SortField = "name" | "brand" | "price" | "category" | "stock" | "minStock";
 type SortOrder = "asc" | "desc";
 
 export default function ProductPage() {
@@ -317,6 +318,11 @@ export default function ProductPage() {
         if (sortField === "price") {
           return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
         }
+        if (sortField === "stock") {
+          const aVal = a.isService ? 999999 : (a.stock ?? 0);
+          const bVal = b.isService ? 999999 : (b.stock ?? 0);
+          return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+        }
         if (sortField === "minStock") {
           return sortOrder === "asc"
             ? a.minStock - b.minStock
@@ -446,7 +452,9 @@ export default function ProductPage() {
                   required
                 >
                   <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full">
-                    <SelectValue placeholder="Pilih Kategori Produk" />
+                    <SelectValue placeholder="Pilih Kategori Produk">
+                      {categories.find((cat) => String(cat.id) === categoryId)?.name}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((cat) => (
@@ -718,10 +726,10 @@ export default function ProductPage() {
                 Harga Jual {renderSortIcon("price")}
               </TableHead>
               <TableHead
-                onClick={() => handleSort("minStock")}
+                onClick={() => handleSort("stock")}
                 className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center cursor-pointer select-none hover:text-blue-600 transition-colors"
               >
-                Min. Stok {renderSortIcon("minStock")}
+                Sisa Stok {renderSortIcon("stock")}
               </TableHead>
               <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[120px]">
                 Aksi
@@ -778,9 +786,30 @@ export default function ProductPage() {
                     Rp {product.price.toLocaleString("id-ID")}
                   </TableCell>
                   <TableCell className="py-3.5 px-4 text-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                      {product.minStock} pcs
-                    </span>
+                    {product.isService ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                        Jasa (∞)
+                      </span>
+                    ) : (
+                      <div>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-black font-mono border ${
+                            (product.stock ?? 0) <= 0
+                              ? "bg-rose-100 text-rose-800 border-rose-300"
+                              : (product.stock ?? 0) <= product.minStock
+                                ? "bg-amber-100 text-amber-900 border-amber-300 font-extrabold"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          }`}
+                        >
+                          {product.stock ?? 0} pcs
+                        </span>
+                        {product.minStock > 0 && (
+                          <span className="block text-[10px] text-gray-400 mt-0.5 font-semibold">
+                            Min: {product.minStock} pcs
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="py-3.5 px-4 text-center">
                     <div className="flex items-center justify-center gap-1.5">

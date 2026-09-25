@@ -409,7 +409,12 @@ export default function PurchasePage() {
                               required
                             >
                               <SelectTrigger className="h-9 text-xs rounded-xl font-medium w-full">
-                                <SelectValue placeholder="Pilih Produk" />
+                                <SelectValue placeholder="Pilih Produk">
+                                  {(() => {
+                                    const p = products.find((prod) => String(prod.id) === item.productId);
+                                    return p ? (p.brand ? `[${p.brand}] ${p.name}` : p.name) : undefined;
+                                  })()}
+                                </SelectValue>
                               </SelectTrigger>
                               <SelectContent>
                                 {products.map((p) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -52,15 +52,43 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/dashboard")
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.data) setData(json.data);
-      })
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth() + 1);
+
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  const years = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1];
+
+  const loadDashboardData = useCallback(async (year: number, month: number) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/dashboard?year=${year}&month=${month}`);
+      const json = await res.json();
+      if (json.data) setData(json.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadDashboardData(selectedYear, selectedMonth);
+  }, [loadDashboardData, selectedYear, selectedMonth]);
 
   if (isLoading) {
     return (
@@ -119,9 +147,34 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold">
-              <Calendar className="w-4 h-4 text-blue-300" />
-              <span>{data.periode}</span>
+            {/* PERIODE SELECTOR (BULAN & TAHUN) */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold shadow-xs">
+              <Calendar className="w-4 h-4 text-blue-300 shrink-0" />
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  className="bg-transparent text-white font-bold outline-none cursor-pointer text-xs"
+                >
+                  {monthNames.map((name, idx) => (
+                    <option key={name} value={idx + 1} className="text-gray-900 bg-white font-medium">
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-white/40">/</span>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="bg-transparent text-white font-bold outline-none cursor-pointer text-xs"
+                >
+                  {years.map((y) => (
+                    <option key={y} value={y} className="text-gray-900 bg-white font-medium">
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <Link
               href="/dashboard/kasir"

@@ -240,7 +240,12 @@ export default function DamageLogPage() {
                   required
                 >
                   <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full">
-                    <SelectValue placeholder="Pilih produk yang rusak/mati" />
+                    <SelectValue placeholder="Pilih produk yang rusak/mati">
+                      {(() => {
+                        const p = products.find((prod) => String(prod.id) === selectedProductId);
+                        return p ? (p.brand ? `[${p.brand}] ${p.name}` : p.name) : undefined;
+                      })()}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {products.map((p) => (

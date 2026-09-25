@@ -5,14 +5,12 @@ import {
   Search,
   Plus,
   Trash2,
-  Wrench,
   AlertTriangle,
   PackageX,
   Sparkles,
   Wallet,
   AlertCircle,
   X,
-  CheckCircle2,
   Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,7 +66,6 @@ export default function DamageLogPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -150,27 +147,6 @@ export default function DamageLogPage() {
     }
   };
 
-  const handleRepair = async (id: number, productName: string) => {
-    if (
-      !confirm(
-        `Barang ${productName} sudah berhasil diperbaiki?\nStok akan dikembalikan ke inventaris dan beban kerugian akan disesuaikan.`,
-      )
-    )
-      return;
-
-    try {
-      const res = await fetch(`/api/damage-logs/${id}`, { method: "PATCH" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal memperbarui status");
-
-      reloadData();
-      success(`Barang ${productName} berhasil diperbaiki & stok dikembalikan!`);
-    } catch (error: unknown) {
-      if (error instanceof Error) showError(error.message);
-      else showError("Gagal mengubah status kerusakan");
-    }
-  };
-
   const handleDelete = async (id: number) => {
     if (!confirm("Yakin ingin menghapus catatan kerusakan ini secara permanen?")) return;
 
@@ -189,38 +165,23 @@ export default function DamageLogPage() {
 
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
-      const matchStatus =
-        statusFilter === "all" ||
-        log.status.toLowerCase() === statusFilter.toLowerCase();
       const matchSearch =
         searchQuery === "" ||
         log.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (log.product.brand &&
           log.product.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (log.notes && log.notes.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchStatus && matchSearch;
+      return matchSearch;
     });
-  }, [logs, statusFilter, searchQuery]);
+  }, [logs, searchQuery]);
 
   const summary = useMemo(() => {
-    const totalLoss = logs.reduce((acc, log) => {
-      if (log.status.toLowerCase() === "rusak") {
-        return acc + (log.totalCost || 0);
-      }
-      return acc;
-    }, 0);
-    const damagedItemsCount = logs.reduce((acc, log) => {
-      if (log.status.toLowerCase() === "rusak") {
-        return acc + (log.quantity || 0);
-      }
-      return acc;
-    }, 0);
-    const repairedCount = logs.filter((l) => l.status.toLowerCase() !== "rusak").length;
+    const totalLoss = logs.reduce((acc, log) => acc + (log.totalCost || 0), 0);
+    const damagedItemsCount = logs.reduce((acc, log) => acc + (log.quantity || 0), 0);
 
     return {
       totalLoss,
       damagedItemsCount,
-      repairedCount,
     };
   }, [logs]);
 
@@ -350,11 +311,11 @@ export default function DamageLogPage() {
       </div>
 
       {/* SUMMARY CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-              Total Kerugian Riil
+              Total Beban Kerugian
             </span>
             <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <Wallet className="w-5 h-5" />
@@ -365,7 +326,7 @@ export default function DamageLogPage() {
               Rp {summary.totalLoss.toLocaleString("id-ID")}
             </div>
             <p className="text-xs font-semibold text-gray-400 mt-1">
-              Beban kerugian barang rusak aktif
+              Akumulasi kerugian dari barang rusak / ikan mati
             </p>
           </div>
         </div>
@@ -373,7 +334,7 @@ export default function DamageLogPage() {
         <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-              Total Barang Rusak
+              Total Barang Rusak / Mati
             </span>
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
               <PackageX className="w-5 h-5" />
@@ -384,37 +345,18 @@ export default function DamageLogPage() {
               {summary.damagedItemsCount} Pcs
             </div>
             <p className="text-xs font-semibold text-gray-400 mt-1">
-              Barang fisik atau ikan yang mati
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-              Berhasil Diselamatkan / Servis
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-emerald-600 tracking-tight font-mono">
-              {summary.repairedCount} Insiden
-            </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
-              Telah diperbaiki & stoknya kembali
+              Total fisik ikan mati atau barang pecah
             </p>
           </div>
         </div>
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="relative w-full md:w-80">
+      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex items-center justify-between gap-3">
+        <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Cari nama produk atau catatan..."
+            placeholder="Cari nama produk, merk, atau catatan..."
             className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -427,29 +369,6 @@ export default function DamageLogPage() {
               <X className="w-4 h-4" />
             </button>
           )}
-        </div>
-
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-          {[
-            { id: "all", label: "Semua Insiden" },
-            { id: "rusak", label: "Rusak / Mati" },
-            { id: "diperbaiki", label: "Sudah Diperbaiki" },
-          ].map((item) => {
-            const isSelected = statusFilter === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setStatusFilter(item.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                  isSelected
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
         </div>
       </div>
 
@@ -470,13 +389,10 @@ export default function DamageLogPage() {
               <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
                 Beban Kerugian
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
-                Status
-              </TableHead>
               <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
                 Keterangan
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[120px]">
+              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[80px]">
                 Aksi
               </TableHead>
             </TableRow>
@@ -484,7 +400,7 @@ export default function DamageLogPage() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-16 text-gray-400">
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
                   <div className="w-8 h-8 border-3 border-rose-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="font-bold text-gray-700 text-sm">
                     Memuat laporan kerusakan...
@@ -492,83 +408,53 @@ export default function DamageLogPage() {
                 </TableCell>
               </TableRow>
             ) : filteredLogs.length > 0 ? (
-              filteredLogs.map((log) => {
-                const isDamaged = log.status.toLowerCase() === "rusak";
-                return (
-                  <TableRow
-                    key={log.id}
-                    className="hover:bg-rose-50/30 border-b border-gray-100 transition-colors"
-                  >
-                    <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
-                      {new Date(log.createdAt).toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {log.product.brand && (
-                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                            {log.product.brand}
-                          </span>
-                        )}
-                        <span className="font-bold text-sm text-gray-900">
-                          {log.product.name}
+              filteredLogs.map((log) => (
+                <TableRow
+                  key={log.id}
+                  className="hover:bg-rose-50/30 border-b border-gray-100 transition-colors"
+                >
+                  <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
+                    {new Date(log.createdAt).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {log.product.brand && (
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                          {log.product.brand}
                         </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4 text-center font-bold text-sm text-rose-600 font-mono">
-                      {log.quantity} pcs
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4 text-right font-black text-sm text-gray-950 font-mono">
-                      Rp {log.totalCost.toLocaleString("id-ID")}
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${
-                          isDamaged
-                            ? "bg-rose-50 text-rose-700 border-rose-200"
-                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        }`}
-                      >
-                        {isDamaged ? (
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                        ) : (
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                        )}
-                        {log.status.toUpperCase()}
+                      )}
+                      <span className="font-bold text-sm text-gray-900">
+                        {log.product.name}
                       </span>
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4 text-xs text-gray-600 max-w-xs truncate">
-                      {log.notes || "-"}
-                    </TableCell>
-                    <TableCell className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {isDamaged && (
-                          <button
-                            onClick={() => handleRepair(log.id, log.product.name)}
-                            className="p-1.5 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
-                            title="Tandai Sudah Diperbaiki (Stok Kembali)"
-                          >
-                            <Wrench className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(log.id)}
-                          className="p-1.5 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors"
-                          title="Hapus Catatan"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-center font-bold text-sm text-rose-600 font-mono">
+                    {log.quantity} pcs
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-right font-black text-sm text-gray-950 font-mono">
+                    Rp {log.totalCost.toLocaleString("id-ID")}
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-xs text-gray-600 max-w-xs truncate">
+                    {log.notes || "-"}
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-center">
+                    <button
+                      onClick={() => handleDelete(log.id)}
+                      className="p-1.5 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors"
+                      title="Hapus Catatan"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-16 text-gray-400">
+                <TableCell colSpan={6} className="text-center py-16 text-gray-400">
                   <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
                   <p className="font-bold text-gray-700 text-base">
                     Tidak ada laporan kerusakan ditemukan

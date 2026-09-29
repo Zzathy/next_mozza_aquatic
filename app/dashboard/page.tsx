@@ -128,28 +128,28 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
-      {/* BANNER HEADER */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 p-5 sm:p-7 text-white shadow-xl border border-slate-800">
+      {/* BANNER HEADER (CARBON BLACK & CLEAN TYPOGRAPHY) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 p-5 sm:p-7 text-white shadow-xl border border-gray-800">
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-1.5 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-gray-200 text-xs font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Ringkasan Operasional Toko</span>
             </div>
             <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-white">
               Dashboard Mozza Aquatic
             </h1>
-            <p className="text-sm text-slate-300 leading-relaxed font-medium">
+            <p className="text-sm text-gray-300 leading-relaxed font-medium">
               Pantau arus kas, laba bersih, dan kesehatan stok tokomu secara
               real-time untuk periode{" "}
-              <span className="text-blue-300 font-bold">{data.periode}</span>.
+              <span className="text-white font-black underline underline-offset-4 decoration-gray-500">{data.periode}</span>.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* PERIODE SELECTOR (BULAN & TAHUN) */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold shadow-xs">
-              <Calendar className="w-4 h-4 text-blue-300 shrink-0" />
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold shadow-xs">
+              <Calendar className="w-4 h-4 text-gray-300 shrink-0" />
               <div className="flex items-center gap-1.5">
                 <select
                   value={selectedMonth}
@@ -178,7 +178,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/dashboard/kasir"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-lg shadow-blue-600/30 transition-all active:scale-95"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white hover:bg-gray-100 text-gray-950 text-xs font-black shadow-lg shadow-black/20 transition-all active:scale-95"
             >
               <ShoppingCart className="w-4 h-4" />
               <span>Buka Kasir Sekarang</span>
@@ -188,40 +188,40 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 4 KARTU UTAMA FINANSIAL */}
+      {/* 4 KARTU UTAMA FINANSIAL (SURFACE ABU-ABU LEMBUT 30%) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
         {/* TOTAL OMSET */}
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs hover:border-blue-400 transition-all">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Total Omset
             </span>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-2xs">
               <TrendingUp className="w-5 h-5 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-gray-950 tracking-tight">
+            <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
               Rp {data.labaRugi.totalOmset.toLocaleString("id-ID")}
             </div>
             <p className="text-xs font-semibold text-gray-500 mt-1.5 flex items-center gap-1.5">
-              <Receipt className="w-3.5 h-3.5 text-blue-600" />
+              <Receipt className="w-3.5 h-3.5 text-gray-700" />
               <span>{data.totalTransaksi} transaksi penjualan</span>
             </p>
           </div>
         </div>
 
         {/* LABA BERSIH */}
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs hover:border-emerald-400 transition-all">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Laba Bersih
             </span>
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xs ${
                 data.labaRugi.labaBersih >= 0
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-rose-50 text-rose-600"
+                  ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                  : "bg-rose-100 text-rose-800 border-rose-300"
               }`}
             >
               <Wallet className="w-5 h-5 stroke-[2.5]" />
@@ -229,10 +229,10 @@ export default function DashboardPage() {
           </div>
           <div className="mt-3">
             <div
-              className={`text-2xl font-black tracking-tight ${
+              className={`text-2xl font-black tracking-tight font-mono ${
                 data.labaRugi.labaBersih >= 0
-                  ? "text-emerald-600"
-                  : "text-rose-600"
+                  ? "text-emerald-700"
+                  : "text-rose-700"
               }`}
             >
               Rp {data.labaRugi.labaBersih.toLocaleString("id-ID")}
@@ -244,18 +244,12 @@ export default function DashboardPage() {
         </div>
 
         {/* ARUS KAS BERSIH */}
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs hover:border-cyan-400 transition-all">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Arus Kas Bersih
             </span>
-            <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                data.arusKas.selisihKas >= 0
-                  ? "bg-cyan-50 text-cyan-700"
-                  : "bg-amber-50 text-amber-700"
-              }`}
-            >
+            <div className="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-2xs">
               {data.arusKas.selisihKas >= 0 ? (
                 <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
               ) : (
@@ -265,8 +259,8 @@ export default function DashboardPage() {
           </div>
           <div className="mt-3">
             <div
-              className={`text-2xl font-black tracking-tight ${
-                data.arusKas.selisihKas >= 0 ? "text-cyan-800" : "text-amber-800"
+              className={`text-2xl font-black tracking-tight font-mono ${
+                data.arusKas.selisihKas >= 0 ? "text-gray-950" : "text-amber-800"
               }`}
             >
               Rp {data.arusKas.selisihKas.toLocaleString("id-ID")}
@@ -278,17 +272,17 @@ export default function DashboardPage() {
         </div>
 
         {/* NILAI ASET GUDANG */}
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs hover:border-indigo-400 transition-all">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Nilai Aset Stok
             </span>
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gray-200 text-gray-800 border border-gray-300 flex items-center justify-center shadow-2xs">
               <Database className="w-5 h-5 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-indigo-900 tracking-tight">
+            <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
               Rp {data.aset.totalAsetGudang.toLocaleString("id-ID")}
             </div>
             <p className="text-xs font-semibold text-gray-500 mt-1.5">
@@ -301,62 +295,62 @@ export default function DashboardPage() {
       {/* RINCIAN LABA RUGI & ARUS KAS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* KARTU BREAKDOWN LABA RUGI */}
-        <div className="bg-white p-6 rounded-3xl border-2 border-gray-200/80 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+        <div className="bg-[#F4F5F7] p-6 rounded-3xl border border-gray-200/90 shadow-2xs">
+          <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center">
                 <Scale className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-base text-gray-900">
+                <h3 className="font-black text-base text-gray-950">
                   Rincian Laba & Rugi
                 </h3>
                 <p className="text-xs text-gray-500">Perhitungan bisnis bulan ini</p>
               </div>
             </div>
-            <span className="text-xs font-extrabold bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+            <span className="text-xs font-black bg-white text-emerald-800 border border-emerald-300 px-3 py-1 rounded-full shadow-2xs">
               Laba Bersih: Rp {data.labaRugi.labaBersih.toLocaleString("id-ID")}
             </span>
           </div>
 
           <div className="mt-5 space-y-3.5">
             <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-600">Total Omset (Penjualan)</span>
-              <span className="font-bold text-gray-900">
+              <span className="font-semibold text-gray-600">Total Omset (Penjualan)</span>
+              <span className="font-black text-gray-950 font-mono">
                 + Rp {data.labaRugi.totalOmset.toLocaleString("id-ID")}
               </span>
             </div>
 
             <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-600">Modal Pokok Penjualan (HPP)</span>
-              <span className="font-bold text-rose-600">
+              <span className="font-semibold text-gray-600">Modal Pokok Penjualan (HPP)</span>
+              <span className="font-black text-rose-600 font-mono">
                 - Rp {data.labaRugi.totalModal.toLocaleString("id-ID")}
               </span>
             </div>
 
-            <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
-              <span className="font-semibold text-gray-700">Laba Kotor</span>
-              <span className="font-extrabold text-gray-950">
+            <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-200">
+              <span className="font-bold text-gray-800">Laba Kotor</span>
+              <span className="font-black text-gray-950 font-mono">
                 Rp {data.labaRugi.labaKotor.toLocaleString("id-ID")}
               </span>
             </div>
 
             <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-600">Biaya Pengeluaran Toko</span>
-              <span className="font-bold text-rose-600">
+              <span className="font-semibold text-gray-600">Biaya Pengeluaran Toko</span>
+              <span className="font-black text-rose-600 font-mono">
                 - Rp {data.labaRugi.totalPengeluaran.toLocaleString("id-ID")}
               </span>
             </div>
 
-            <div className="flex justify-between items-center pt-3 border-t-2 border-dashed border-gray-200">
-              <span className="font-extrabold text-base text-gray-900">
+            <div className="flex justify-between items-center pt-3 border-t-2 border-dashed border-gray-300">
+              <span className="font-black text-base text-gray-950">
                 Laba Bersih Akhir
               </span>
               <span
-                className={`text-xl font-black ${
+                className={`text-xl font-black font-mono ${
                   data.labaRugi.labaBersih >= 0
-                    ? "text-emerald-600"
-                    : "text-rose-600"
+                    ? "text-emerald-700"
+                    : "text-rose-700"
                 }`}
               >
                 Rp {data.labaRugi.labaBersih.toLocaleString("id-ID")}
@@ -366,49 +360,49 @@ export default function DashboardPage() {
         </div>
 
         {/* KARTU BREAKDOWN ARUS KAS */}
-        <div className="bg-white p-6 rounded-3xl border-2 border-gray-200/80 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+        <div className="bg-[#F4F5F7] p-6 rounded-3xl border border-gray-200/90 shadow-2xs">
+          <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-gray-900 text-white flex items-center justify-center">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-base text-gray-900">
+                <h3 className="font-black text-base text-gray-950">
                   Arus Kas Toko (Cashflow)
                 </h3>
                 <p className="text-xs text-gray-500">Mutasi fisik uang kas masuk & keluar</p>
               </div>
             </div>
-            <span className="text-xs font-extrabold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">
+            <span className="text-xs font-black bg-white text-gray-900 px-3 py-1 rounded-full border border-gray-200 shadow-2xs">
               Net Kasir
             </span>
           </div>
 
           <div className="mt-5 space-y-3.5">
             <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-600">Uang Diterima Penjualan (Kas Masuk)</span>
-              <span className="font-bold text-emerald-600">
+              <span className="font-semibold text-gray-600">Uang Diterima Penjualan (Kas Masuk)</span>
+              <span className="font-black text-emerald-700 font-mono">
                 + Rp {data.arusKas.uangMasuk.toLocaleString("id-ID")}
               </span>
             </div>
 
             <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-600">Total Pengeluaran Toko (Kas Keluar)</span>
-              <span className="font-bold text-rose-600">
+              <span className="font-semibold text-gray-600">Total Pengeluaran Toko (Kas Keluar)</span>
+              <span className="font-black text-rose-600 font-mono">
                 - Rp {data.arusKas.uangKeluar.toLocaleString("id-ID")}
               </span>
             </div>
 
             <div className="pt-8">
-              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-white border border-gray-200 shadow-2xs flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-gray-500 block uppercase">
                     Saldo Bersih Arus Kas
                   </span>
                   <span
-                    className={`text-xl font-black mt-0.5 block ${
+                    className={`text-xl font-black font-mono mt-0.5 block ${
                       data.arusKas.selisihKas >= 0
-                        ? "text-cyan-800"
+                        ? "text-gray-950"
                         : "text-amber-800"
                     }`}
                   >
@@ -416,10 +410,10 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <div
-                  className={`px-3 py-1 rounded-xl text-xs font-bold ${
+                  className={`px-3 py-1 rounded-xl text-xs font-black ${
                     data.arusKas.selisihKas >= 0
-                      ? "bg-cyan-100 text-cyan-800"
-                      : "bg-amber-100 text-amber-800"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      : "bg-amber-50 text-amber-800 border border-amber-200"
                   }`}
                 >
                   {data.arusKas.selisihKas >= 0 ? "Surplus Kas" : "Defisit Kas"}
@@ -433,17 +427,17 @@ export default function DashboardPage() {
       {/* SECTION BAWAH: PRODUK TERLARIS & PERINGATAN STOK */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* PRODUK PALING LARIS */}
-        <div className="bg-white rounded-3xl border-2 border-gray-200/80 shadow-xs overflow-hidden">
-          <div className="p-5 border-b border-gray-100 bg-amber-50/60 flex items-center justify-between">
+        <div className="bg-[#F4F5F7] rounded-3xl border border-gray-200/90 shadow-2xs overflow-hidden">
+          <div className="p-5 border-b border-gray-200 bg-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
                 <Award className="w-4 h-4 stroke-[2.5]" />
               </div>
-              <h3 className="font-extrabold text-gray-900 text-base">
+              <h3 className="font-black text-gray-950 text-base">
                 Produk Paling Laris
               </h3>
             </div>
-            <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-gray-700 bg-gray-100 border border-gray-200 px-2.5 py-0.5 rounded-full">
               Bulan Ini
             </span>
           </div>
@@ -467,11 +461,11 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={p.id}
-                      className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200/80 hover:bg-amber-50/30 transition-all space-y-2"
+                      className="p-3.5 rounded-2xl bg-white border border-gray-200 shadow-2xs hover:border-gray-400 transition-all space-y-2"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="w-7 h-7 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-black shrink-0">
+                          <span className="w-7 h-7 rounded-xl bg-gray-100 text-gray-900 border border-gray-200 flex items-center justify-center text-xs font-black shrink-0">
                             #{index + 1}
                           </span>
                           <p className="font-bold text-sm text-gray-900 truncate">
@@ -479,19 +473,19 @@ export default function DashboardPage() {
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="text-sm font-extrabold text-gray-900">
+                          <span className="text-sm font-black text-gray-950 font-mono">
                             {p.soldQuantity} Terjual
                           </span>
-                          <span className="text-xs font-semibold text-gray-500 block">
+                          <span className="text-xs font-semibold text-gray-500 block font-mono">
                             Rp {p.revenue.toLocaleString("id-ID")}
                           </span>
                         </div>
                       </div>
 
                       {/* PROGRESS BAR VISUAL */}
-                      <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden border border-gray-200">
                         <div
-                          className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                          className="bg-gray-900 h-full rounded-full transition-all duration-500"
                           style={{ width: `${percent}%` }}
                         ></div>
                       </div>
@@ -504,13 +498,13 @@ export default function DashboardPage() {
         </div>
 
         {/* PERINGATAN STOK KRITIS */}
-        <div className="bg-white rounded-3xl border-2 border-gray-200/80 shadow-xs overflow-hidden">
-          <div className="p-5 border-b border-gray-100 bg-rose-50/60 flex items-center justify-between">
+        <div className="bg-[#F4F5F7] rounded-3xl border border-gray-200/90 shadow-2xs overflow-hidden">
+          <div className="p-5 border-b border-gray-200 bg-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
                 <AlertCircle className="w-4 h-4 stroke-[2.5]" />
               </div>
-              <h3 className="font-extrabold text-gray-900 text-base">
+              <h3 className="font-black text-gray-950 text-base">
                 Peringatan Stok Kritis
               </h3>
             </div>
@@ -538,7 +532,7 @@ export default function DashboardPage() {
                 {data.insights.lowStockAlerts.map((p) => (
                   <div
                     key={p.id}
-                    className="p-3.5 rounded-2xl bg-rose-50/40 border border-rose-200/80 flex items-center justify-between gap-3 hover:bg-rose-50 transition-all"
+                    className="p-3.5 rounded-2xl bg-white border border-rose-200 flex items-center justify-between gap-3 hover:border-rose-400 shadow-2xs transition-all"
                   >
                     <div className="min-w-0">
                       <p className="font-bold text-sm text-gray-900 truncate">
@@ -549,7 +543,7 @@ export default function DashboardPage() {
                       </span>
                     </div>
 
-                    <span className="inline-flex items-center px-3 py-1 bg-rose-100 text-rose-800 font-extrabold rounded-xl text-xs shrink-0">
+                    <span className="inline-flex items-center px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 font-black rounded-xl text-xs shrink-0 font-mono">
                       Sisa {p.currentStock}
                     </span>
                   </div>

@@ -334,9 +334,9 @@ export default function CashierPage() {
   };
 
   return (
-    <div className="flex h-full min-h-0 bg-[#F3F4F6] text-gray-900 overflow-hidden select-none relative">
-      {/* AREA KIRI: KATALOG PRODUK */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-[#F8FAFC] print:hidden h-full">
+    <div className="flex h-full min-h-0 bg-white text-gray-900 overflow-hidden select-none relative">
+      {/* AREA KIRI: KATALOG PRODUK (KANVAS PUTIH BERSIH) */}
+      <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-white print:hidden h-full">
         {/* TOP BAR HEADER */}
         <header className="px-4 lg:px-6 py-3.5 border-b border-gray-200 bg-white shadow-xs flex items-center justify-between gap-3">
           <div>
@@ -355,7 +355,7 @@ export default function CashierPage() {
               <Input
                 type="text"
                 placeholder="Cari produk..."
-                className="pl-9 pr-8 h-10 bg-gray-50 border-gray-300 text-gray-900 text-sm placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:bg-white rounded-xl shadow-xs transition-all font-medium"
+                className="pl-9 pr-8 h-10 bg-[#F3F4F6] border-gray-300 text-gray-900 text-sm placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:bg-white rounded-xl shadow-xs transition-all font-medium"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -372,12 +372,12 @@ export default function CashierPage() {
             {/* FLOATING CART BUTTON FOR MOBILE/TABLET */}
             <button
               onClick={() => setIsMobileCartOpen(true)}
-              className="lg:hidden relative h-10 px-3.5 rounded-xl bg-[#2563EB] text-white flex items-center gap-1.5 font-bold text-xs shadow-md shadow-blue-500/25 shrink-0 active:scale-95 transition-all"
+              className="lg:hidden relative h-10 px-3.5 rounded-xl bg-gray-900 text-white flex items-center gap-1.5 font-bold text-xs shadow-md shadow-black/20 shrink-0 active:scale-95 transition-all"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-4 h-4 stroke-[2.5]" />
               <span>Keranjang</span>
               {cart.length > 0 && (
-                <span className="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center -mr-1">
+                <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center -mr-1">
                   {cart.length}
                 </span>
               )}
@@ -386,13 +386,13 @@ export default function CashierPage() {
         </header>
 
         {/* KATEGORI PILLS (TOMBOL BESAR, MUDAH DITEKAN DI TOUCHSCREEN/MOUSE) */}
-        <div className="px-6 py-3 border-b border-gray-200 bg-white/80 backdrop-blur-sm flex items-center gap-2.5 overflow-x-auto no-scrollbar">
+        <div className="px-6 py-3 border-b border-gray-200 bg-white flex items-center gap-2.5 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setSelectedCategory("all")}
             className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
               selectedCategory === "all"
-                ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/25"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 border border-gray-200"
+                ? "bg-gray-900 text-white shadow-xs"
+                : "bg-[#F3F4F6] text-gray-700 hover:bg-gray-200 hover:text-gray-900 border border-gray-200"
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -408,8 +408,8 @@ export default function CashierPage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
                   isSelected
-                    ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/25"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 border border-gray-200"
+                    ? "bg-gray-900 text-white shadow-xs"
+                    : "bg-[#F3F4F6] text-gray-700 hover:bg-gray-200 hover:text-gray-900 border border-gray-200"
                 }`}
               >
                 <span>{cat.name}</span>
@@ -427,8 +427,8 @@ export default function CashierPage() {
           })}
         </div>
 
-        {/* GRID PRODUK (KARTU BESAR & TEKS SANGAT JELAS) */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+        {/* GRID PRODUK (PERMUKAAN KARTU ABU-ABU LEMBUT STONE SURFACE 30%) */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-white">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
             {filteredProducts.map((product) => {
               const isOutOfStock = !product.isService && product.stock <= 0;
@@ -441,15 +441,15 @@ export default function CashierPage() {
                   onClick={() => addToCart(product)}
                   className={`group relative flex flex-col justify-between rounded-2xl p-4.5 border-2 transition-all duration-150 select-none min-h-[140px] ${
                     isOutOfStock
-                      ? "bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed grayscale"
+                      ? "bg-gray-100 border-gray-200 opacity-50 cursor-not-allowed grayscale"
                       : inCartQty > 0
-                        ? "bg-blue-50/80 border-[#2563EB] shadow-md ring-2 ring-blue-500/20 cursor-pointer"
-                        : "bg-white border-gray-200/90 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5 cursor-pointer active:scale-[0.98]"
+                        ? "bg-gray-100 border-gray-900 shadow-sm ring-1 ring-gray-900/20 cursor-pointer"
+                        : "bg-[#F4F5F7] border-gray-200/90 hover:border-gray-400 hover:bg-white hover:shadow-md hover:-translate-y-0.5 cursor-pointer active:scale-[0.98]"
                   }`}
                 >
                   {/* BADGE DI DALAM KERANJANG (BESAR & TEGAS) */}
                   {inCartQty > 0 && (
-                    <div className="absolute -top-3 -right-2.5 bg-[#2563EB] text-white text-xs font-black min-w-7 h-7 px-1.5 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-in zoom-in-75">
+                    <div className="absolute -top-3 -right-2.5 bg-gray-900 text-white text-xs font-black min-w-7 h-7 px-1.5 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-in zoom-in-75">
                       {inCartQty}x
                     </div>
                   )}
@@ -459,7 +459,7 @@ export default function CashierPage() {
                     <div className="flex items-center justify-between gap-1 mb-2">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {product.brand && (
-                          <span className="text-[11px] font-black px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-800 border border-blue-200 truncate">
+                          <span className="text-[11px] font-black px-1.5 py-0.5 rounded-md bg-gray-200 text-gray-800 border border-gray-300 truncate">
                             {product.brand}
                           </span>
                         )}
@@ -468,17 +468,17 @@ export default function CashierPage() {
                         </span>
                       </div>
                       {product.isService ? (
-                        <span className="text-xs font-bold bg-cyan-100 text-cyan-800 px-2 py-0.5 rounded-md">
+                        <span className="text-xs font-bold bg-cyan-100 text-cyan-800 border border-cyan-200 px-2 py-0.5 rounded-md">
                           Jasa
                         </span>
                       ) : (
                         <span
                           className={`text-xs font-bold px-2 py-0.5 rounded-md ${
                             product.stock > 10
-                              ? "bg-emerald-100 text-emerald-800"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                               : product.stock > 0
-                                ? "bg-amber-100 text-amber-800 font-extrabold"
-                                : "bg-rose-100 text-rose-800"
+                                ? "bg-amber-100 text-amber-900 border border-amber-200 font-extrabold"
+                                : "bg-rose-100 text-rose-800 border border-rose-200"
                           }`}
                         >
                           {product.stock > 0
@@ -489,18 +489,18 @@ export default function CashierPage() {
                     </div>
 
                     {/* NAMA PRODUK BESAR & TEGAS */}
-                    <h3 className="font-bold text-base text-gray-900 group-hover:text-blue-600 line-clamp-2 leading-snug">
+                    <h3 className="font-bold text-base text-gray-900 group-hover:text-black line-clamp-2 leading-snug">
                       {product.name}
                     </h3>
                   </div>
 
                   {/* HARGA & TOMBOL TAMBAH */}
-                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between">
+                  <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-end justify-between">
                     <div>
-                      <span className="text-[11px] font-bold text-gray-600 block uppercase">
+                      <span className="text-[11px] font-bold text-gray-500 block uppercase">
                         Harga Satuan
                       </span>
-                      <span className="text-lg font-black text-gray-950">
+                      <span className="text-lg font-black text-gray-950 font-mono">
                         Rp {product.price.toLocaleString("id-ID")}
                       </span>
                     </div>
@@ -508,8 +508,8 @@ export default function CashierPage() {
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
                         inCartQty > 0
-                          ? "bg-[#2563EB] text-white shadow-sm"
-                          : "bg-gray-100 text-gray-700 group-hover:bg-[#2563EB] group-hover:text-white"
+                          ? "bg-gray-900 text-white shadow-sm"
+                          : "bg-white border border-gray-300 text-gray-700 group-hover:bg-gray-900 group-hover:text-white"
                       }`}
                     >
                       <Plus className="w-5 h-5 stroke-[2.5]" />
@@ -520,12 +520,12 @@ export default function CashierPage() {
             })}
 
             {filteredProducts.length === 0 && (
-              <div className="col-span-full py-20 text-center text-gray-500">
+              <div className="col-span-full py-20 text-center text-gray-400">
                 <Fish className="w-16 h-16 mx-auto mb-3 opacity-30 text-gray-400" />
-                <p className="text-lg font-bold text-gray-700">
+                <p className="text-lg font-bold text-gray-800">
                   Produk tidak ditemukan
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-500 mt-1">
                   Coba kata kunci pencarian lain atau pilih kategori Semua
                 </p>
               </div>
@@ -541,20 +541,20 @@ export default function CashierPage() {
               className="w-full h-13 px-4 rounded-2xl bg-gray-900 text-white shadow-2xl flex items-center justify-between border border-gray-800 active:scale-98 transition-all"
             >
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#2563EB] flex items-center justify-center font-bold text-white shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-white text-gray-900 flex items-center justify-center font-bold shadow-xs">
                   <ShoppingCart className="w-4 h-4" />
                 </div>
                 <div className="text-left">
                   <span className="text-xs font-black block leading-tight">
                     {cart.length} Macam ({cart.reduce((s, i) => s + i.quantity, 0)} pcs)
                   </span>
-                  <span className="text-[11px] font-bold text-blue-400 font-mono">
+                  <span className="text-[11px] font-bold text-gray-300 font-mono">
                     Rp {finalAmount.toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] text-white font-black text-xs shadow-xs">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-gray-900 font-black text-xs shadow-xs">
                 <span>Lihat Pesanan & Bayar</span>
                 <span className="font-mono font-black">&rarr;</span>
               </div>
@@ -563,7 +563,7 @@ export default function CashierPage() {
         )}
       </div>
 
-      {/* AREA KANAN: PESANAN / BILLING CART (RESPONSIF DESKTOP & MOBILE DRAWER) */}
+      {/* AREA KANAN: PESANAN / BILLING CART (PANEL ABU-ABU SLATE 30% SURFACE) */}
       {/* OVERLAY DI MOBILE */}
       {isMobileCartOpen && (
         <div
@@ -573,14 +573,14 @@ export default function CashierPage() {
       )}
 
       <div
-        className={`fixed top-0 bottom-0 right-0 z-50 lg:static w-full sm:w-[400px] lg:w-[380px] xl:w-[420px] flex flex-col bg-white border-l border-gray-200 shrink-0 shadow-2xl lg:shadow-xl print:hidden transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 right-0 z-50 lg:static w-full sm:w-[400px] lg:w-[380px] xl:w-[420px] flex flex-col bg-[#F8F9FA] border-l border-gray-200 text-gray-900 shrink-0 shadow-2xl lg:shadow-xs print:hidden transition-transform duration-300 ease-in-out ${
           isMobileCartOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         }`}
       >
         {/* CART HEADER (COMPACT & CLEAN) */}
         <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-900 flex items-center justify-center font-bold">
               <ShoppingCart className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div>
@@ -597,7 +597,7 @@ export default function CashierPage() {
             {cart.length > 0 && (
               <button
                 onClick={clearCart}
-                className="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 transition-colors flex items-center gap-1"
+                className="text-[11px] font-bold text-rose-600 hover:bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 transition-colors flex items-center gap-1"
                 title="Kosongkan seluruh pesanan"
               >
                 <Trash2 className="w-3 h-3" />
@@ -615,11 +615,11 @@ export default function CashierPage() {
         </div>
 
         {/* CART ITEMS LIST (COMPACT SLEEK POS RECEIPT ROWS) */}
-        <div className="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-1.5 bg-[#F8FAFC]">
+        <div className="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-1.5 bg-[#F3F4F6]">
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 text-gray-400">
-              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
-                <ShoppingCart className="w-8 h-8 opacity-40 text-gray-500" />
+              <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mb-3 border border-gray-200">
+                <ShoppingCart className="w-8 h-8 opacity-40 text-gray-400" />
               </div>
               <p className="font-bold text-gray-700 text-sm">
                 Belum Ada Pesanan
@@ -635,13 +635,13 @@ export default function CashierPage() {
               return (
                 <div
                   key={item.product.id}
-                  className="group flex items-center justify-between p-2.5 rounded-xl bg-white border border-gray-200/80 hover:border-blue-300 transition-all gap-2 shadow-2xs"
+                  className="group flex items-center justify-between p-2.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 transition-all gap-2 shadow-2xs"
                 >
                   {/* Left: Product & Brand & Price */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {item.product.brand && (
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-800 border border-gray-200 shrink-0">
                           {item.product.brand}
                         </span>
                       )}
@@ -658,7 +658,7 @@ export default function CashierPage() {
                   <div className="flex items-center bg-gray-100 rounded-lg p-0.5 border border-gray-200 shrink-0">
                     <button
                       onClick={() => updateQuantity(item.product.id, -1)}
-                      className="w-6 h-6 flex items-center justify-center rounded-md bg-white text-gray-700 hover:bg-gray-50 active:scale-90 transition-all font-bold shadow-2xs"
+                      className="w-6 h-6 flex items-center justify-center rounded-md bg-white text-gray-800 hover:bg-gray-50 active:scale-90 transition-all font-bold shadow-2xs"
                     >
                       <Minus className="w-3 h-3 stroke-[2.5]" />
                     </button>
@@ -676,7 +676,7 @@ export default function CashierPage() {
                     />
                     <button
                       onClick={() => updateQuantity(item.product.id, 1)}
-                      className="w-6 h-6 flex items-center justify-center rounded-md bg-white text-blue-600 hover:bg-gray-50 active:scale-90 transition-all font-bold shadow-2xs"
+                      className="w-6 h-6 flex items-center justify-center rounded-md bg-white text-gray-900 hover:bg-gray-50 active:scale-90 transition-all font-bold shadow-2xs"
                     >
                       <Plus className="w-3 h-3 stroke-[2.5]" />
                     </button>
@@ -721,7 +721,7 @@ export default function CashierPage() {
           {/* Total Pembayaran Besar & Jelas */}
           <div className="flex justify-between items-baseline pt-1 border-t border-gray-100">
             <span className="text-xs font-black uppercase tracking-wider text-gray-700">Total</span>
-            <span className="text-2xl font-black tracking-tight text-[#2563EB] font-mono">
+            <span className="text-2xl font-black tracking-tight text-gray-950 font-mono">
               Rp {finalAmount.toLocaleString("id-ID")}
             </span>
           </div>
@@ -732,7 +732,7 @@ export default function CashierPage() {
               type="button"
               disabled={cart.length === 0 || isLoading}
               onClick={handleQuickExactCash}
-              className="col-span-2 h-11 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-black text-xs border border-blue-200 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+              className="col-span-2 h-11 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-900 font-black text-xs border border-gray-300 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
               title="Bayar dengan uang pas tunai langsung (1 klik)"
             >
               <Banknote className="w-4 h-4" />
@@ -746,7 +746,7 @@ export default function CashierPage() {
                 setPaidAmount(String(finalAmount));
                 setIsCheckoutModalOpen(true);
               }}
-              className="col-span-3 h-11 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/25 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="col-span-3 h-11 rounded-xl bg-gray-900 hover:bg-black text-white font-extrabold text-xs shadow-md shadow-black/20 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <CreditCard className="w-4 h-4 stroke-[2.5]" />
               <span>Bayar Pesanan</span>
@@ -758,10 +758,10 @@ export default function CashierPage() {
 
       {/* MODAL DIALOG PEMBAYARAN KASIR (CHECKOUT DIALOG) */}
       <Dialog open={isCheckoutModalOpen} onOpenChange={setIsCheckoutModalOpen}>
-        <DialogContent className="sm:max-w-[460px] rounded-3xl p-6 max-h-[92vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[460px] rounded-3xl p-6 max-h-[92vh] overflow-y-auto bg-white text-gray-900 border border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-lg font-black text-gray-900 flex items-center gap-2">
-              <Banknote className="w-5 h-5 text-blue-600" />
+              <Banknote className="w-5 h-5 text-gray-900" />
               <span>Pembayaran Kasir</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-500">
@@ -771,11 +771,11 @@ export default function CashierPage() {
 
           <div className="space-y-4 pt-2">
             {/* TOTAL BOX */}
-            <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 text-center">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">
+            <div className="p-4 rounded-2xl bg-[#F4F5F7] border border-gray-200 text-center">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">
                 Total yang Harus Dibayar
               </span>
-              <span className="text-3xl font-black font-mono text-[#2563EB] block mt-0.5">
+              <span className="text-3xl font-black font-mono text-gray-950 block mt-0.5">
                 Rp {finalAmount.toLocaleString("id-ID")}
               </span>
               <span className="text-[11px] text-gray-500 mt-1 block font-medium">
@@ -792,7 +792,7 @@ export default function CashierPage() {
                   onClick={() => setPaymentMethod("Tunai")}
                   className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 ${
                     paymentMethod === "Tunai"
-                      ? "bg-white text-gray-900 shadow-xs"
+                      ? "bg-white text-gray-900 shadow-xs border border-gray-200"
                       : "text-gray-500 hover:text-gray-900"
                   }`}
                 >
@@ -807,7 +807,7 @@ export default function CashierPage() {
                   }}
                   className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 ${
                     paymentMethod === "QRIS"
-                      ? "bg-[#2563EB] text-white shadow-xs"
+                      ? "bg-gray-900 text-white shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
                   }`}
                 >
@@ -818,7 +818,7 @@ export default function CashierPage() {
 
             {/* TUNAI PAYMENT SECTION */}
             {paymentMethod === "Tunai" ? (
-              <div className="space-y-2 bg-gray-50/80 p-3.5 rounded-2xl border border-gray-200">
+              <div className="space-y-2 bg-[#F8F9FA] p-3.5 rounded-2xl border border-gray-200">
                 <div className="flex items-center justify-between gap-3">
                   <Label htmlFor="cash-input" className="text-xs font-bold text-gray-700">
                     Uang Diterima (Rp)
@@ -830,7 +830,7 @@ export default function CashierPage() {
                     placeholder="0"
                     value={paidAmount}
                     onChange={(e) => setPaidAmount(e.target.value)}
-                    className="w-44 h-10 text-right text-base font-black font-mono bg-white border-gray-300 rounded-xl"
+                    className="w-44 h-10 text-right text-base font-black font-mono bg-white border-gray-300 text-gray-900 rounded-xl"
                     autoFocus
                   />
                 </div>
@@ -840,7 +840,7 @@ export default function CashierPage() {
                   <button
                     type="button"
                     onClick={setExactPayment}
-                    className="h-9 px-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-black text-[11px] border border-blue-200 transition-colors"
+                    className="h-9 px-1 rounded-lg bg-gray-900 text-white font-black text-[11px] transition-colors"
                   >
                     Uang Pas
                   </button>
@@ -889,13 +889,13 @@ export default function CashierPage() {
                 ) : null}
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200 text-center space-y-1">
-                <p className="text-xs font-bold text-blue-900">
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-center space-y-1">
+                <p className="text-xs font-bold text-gray-900">
                   Pembayaran Non-Tunai (QRIS / Transfer Bank)
                 </p>
-                <p className="text-[11px] text-blue-600">
+                <p className="text-[11px] text-gray-600">
                   Pastikan pelanggan telah menunjukkan bukti transfer / notifikasi QRIS berhasil senilai{" "}
-                  <strong>Rp {finalAmount.toLocaleString("id-ID")}</strong>.
+                  <strong className="text-gray-950 font-black">Rp {finalAmount.toLocaleString("id-ID")}</strong>.
                 </p>
               </div>
             )}
@@ -909,7 +909,7 @@ export default function CashierPage() {
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Umum / Member"
-                    className="h-9 text-xs rounded-xl"
+                    className="h-9 text-xs rounded-xl bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-1">
@@ -919,7 +919,7 @@ export default function CashierPage() {
                     min="0"
                     value={discount}
                     onChange={(e) => setDiscount(e.target.value)}
-                    className="h-9 text-xs font-mono font-bold text-right rounded-xl"
+                    className="h-9 text-xs font-mono font-bold text-right rounded-xl bg-white border-gray-300 text-gray-900"
                   />
                 </div>
               </div>
@@ -930,7 +930,7 @@ export default function CashierPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Contoh: Titipan, garansi 3 hari"
-                  className="h-9 text-xs rounded-xl"
+                  className="h-9 text-xs rounded-xl bg-white border-gray-300 text-gray-900"
                 />
               </div>
             </div>
@@ -941,7 +941,7 @@ export default function CashierPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsCheckoutModalOpen(false)}
-                className="h-11 px-4 rounded-xl text-xs font-bold"
+                className="h-11 px-4 rounded-xl text-xs font-bold border-gray-300 text-gray-700 hover:bg-gray-100"
               >
                 Kembali
               </Button>
@@ -949,7 +949,7 @@ export default function CashierPage() {
                 type="button"
                 disabled={isLoading}
                 onClick={() => executeCheckout(paidAmount, paymentMethod)}
-                className="flex-1 h-11 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/25 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-1 h-11 rounded-xl bg-gray-900 hover:bg-black text-white font-black text-xs shadow-md shadow-black/20 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <span>Memproses...</span>

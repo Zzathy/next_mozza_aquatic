@@ -328,16 +328,16 @@ export default function PurchasePage() {
               resetForm();
               setIsModalOpen(true);
             }}
-            className="h-11 px-5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold shadow-md shadow-blue-500/25 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
+            className="h-11 px-5 rounded-xl bg-gray-900 hover:bg-black text-white font-extrabold shadow-md shadow-black/20 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Tambah Faktur Kulakan</span>
           </Button>
 
-          <DialogContent className="sm:max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto bg-white text-gray-900 border border-gray-200 shadow-xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-600" />
+              <DialogTitle className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-gray-900" />
                 <span>
                   {editingId ? "Edit Faktur Kulakan" : "Faktur Pembelian Baru"}
                 </span>
@@ -349,14 +349,14 @@ export default function PurchasePage() {
 
             <form onSubmit={handleSubmit} className="space-y-5 pt-2">
               {/* Info Supplier */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/80 p-4 rounded-2xl border border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-bold text-gray-700">Nama Supplier / Agen</Label>
                   <Input
                     value={supplierName}
                     onChange={(e) => setSupplierName(e.target.value)}
                     placeholder="Misal: Agen Ikan Kediri / Distributor Agaru"
-                    className="h-10 text-sm rounded-xl font-medium bg-white"
+                    className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -365,7 +365,7 @@ export default function PurchasePage() {
                     value={supplierPhone}
                     onChange={(e) => setSupplierPhone(e.target.value)}
                     placeholder="Contoh: 081234567890"
-                    className="h-10 text-sm rounded-xl font-mono bg-white"
+                    className="h-10 text-sm rounded-xl font-mono bg-white border-gray-300 text-gray-900"
                   />
                 </div>
               </div>
@@ -379,27 +379,27 @@ export default function PurchasePage() {
                   <button
                     type="button"
                     onClick={addCartItem}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs font-bold text-gray-900 hover:underline flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Tambah Baris
                   </button>
                 </div>
 
-                <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
+                <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-2xs bg-white">
                   <Table>
-                    <TableHeader className="bg-gray-50">
-                      <TableRow>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700">Produk</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-28 text-center">Qty</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-44 text-right">Harga Modal/Pcs</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-36">Expired</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 w-12 text-center"></TableHead>
+                    <TableHeader className="bg-[#F4F5F7]">
+                      <TableRow className="border-b border-gray-200">
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800">Produk</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 w-28 text-center">Qty</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 w-44 text-right">Harga Modal/Pcs</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 w-36">Expired</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 w-12 text-center"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {cart.map((item, index) => (
-                        <TableRow key={index} className="border-b border-gray-100">
+                        <TableRow key={index} className="border-b border-gray-100 hover:bg-[#F8F9FA]">
                           <TableCell className="p-2">
                             <Select
                               value={item.productId}
@@ -408,7 +408,7 @@ export default function PurchasePage() {
                               }
                               required
                             >
-                              <SelectTrigger className="h-9 text-xs rounded-xl font-medium w-full">
+                              <SelectTrigger className="h-9 text-xs rounded-xl font-medium w-full bg-white border-gray-300 text-gray-900">
                                 <SelectValue placeholder="Pilih Produk">
                                   {(() => {
                                     const p = products.find((prod) => String(prod.id) === item.productId);
@@ -416,7 +416,7 @@ export default function PurchasePage() {
                                   })()}
                                 </SelectValue>
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="bg-white text-gray-900 border-gray-200">
                                 {products.map((p) => (
                                   <SelectItem key={p.id} value={String(p.id)}>
                                     {p.brand ? `[${p.brand}] ` : ""}{p.name}
@@ -434,7 +434,7 @@ export default function PurchasePage() {
                               onChange={(e) =>
                                 updateCartItem(index, "qty", e.target.value)
                               }
-                              className="h-9 text-xs font-mono font-bold text-center rounded-xl"
+                              className="h-9 text-xs font-mono font-bold text-center rounded-xl bg-white border-gray-300 text-gray-900"
                             />
                           </TableCell>
                           <TableCell className="p-2">
@@ -446,7 +446,7 @@ export default function PurchasePage() {
                               onChange={(e) =>
                                 updateCartItem(index, "buyPrice", e.target.value)
                               }
-                              className="h-9 text-xs font-mono font-bold text-right rounded-xl"
+                              className="h-9 text-xs font-mono font-bold text-right rounded-xl bg-white border-gray-300 text-gray-900"
                             />
                           </TableCell>
                           <TableCell className="p-2">
@@ -456,7 +456,7 @@ export default function PurchasePage() {
                               onChange={(e) =>
                                 updateCartItem(index, "expiredDate", e.target.value)
                               }
-                              className="h-9 text-xs rounded-xl font-mono"
+                              className="h-9 text-xs rounded-xl font-mono bg-white border-gray-300 text-gray-900"
                             />
                           </TableCell>
                           <TableCell className="p-2 text-center">
@@ -464,7 +464,7 @@ export default function PurchasePage() {
                               type="button"
                               onClick={() => removeCartItem(index)}
                               disabled={cart.length === 1}
-                              className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 disabled:opacity-30"
+                              className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 disabled:opacity-30"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -477,21 +477,21 @@ export default function PurchasePage() {
               </div>
 
               {/* Ringkasan & Pembayaran */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/90 p-4 rounded-2xl border border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200">
                 <div className="space-y-2">
                   <Label className="text-xs font-bold text-gray-700">Catatan Pengadaan</Label>
                   <Input
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Contoh: Titipan pengiriman via ekspedisi, tempo 14 hari"
-                    className="h-10 text-xs rounded-xl bg-white"
+                    placeholder="Contoh: Titipan ekspedisi, tempo 14 hari"
+                    className="h-10 text-xs rounded-xl bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
                 <div className="space-y-2.5 text-xs">
                   <div className="flex justify-between items-center text-gray-600">
                     <span>Subtotal Barang:</span>
-                    <span className="font-mono font-bold">
+                    <span className="font-mono font-bold text-gray-900">
                       Rp {totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
@@ -500,7 +500,7 @@ export default function PurchasePage() {
                     <span className="text-emerald-700 font-semibold">Diskon Supplier (Rp):</span>
                     <Input
                       type="number"
-                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white"
+                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white border-gray-300 text-gray-900"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
                     />
@@ -508,7 +508,7 @@ export default function PurchasePage() {
 
                   <div className="flex justify-between items-center font-black text-sm border-t border-gray-200 pt-2 text-gray-950">
                     <span>Total Tagihan:</span>
-                    <span className="text-[#2563EB] font-mono">
+                    <span className="text-gray-950 font-mono">
                       Rp {finalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
@@ -517,7 +517,7 @@ export default function PurchasePage() {
                     <span className="text-gray-700 font-bold">Uang Dibayar (Rp):</span>
                     <Input
                       type="number"
-                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white"
+                      className="w-32 h-8 text-right font-mono font-bold rounded-lg bg-white border-gray-300 text-gray-900"
                       value={paidAmount}
                       onChange={(e) => setPaidAmount(e.target.value)}
                     />
@@ -541,11 +541,11 @@ export default function PurchasePage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-gray-200">
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-xl text-xs font-bold"
+                  className="rounded-xl text-xs font-bold border-gray-300 text-gray-700 hover:bg-gray-100"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Batal
@@ -553,7 +553,7 @@ export default function PurchasePage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold px-5"
+                  className="rounded-xl bg-gray-900 hover:bg-black text-white font-black text-xs px-5 shadow-md shadow-black/20"
                 >
                   {isLoading ? "Menyimpan..." : "Simpan Pembelian"}
                 </Button>
@@ -563,14 +563,14 @@ export default function PurchasePage() {
         </Dialog>
       </div>
 
-      {/* SUMMARY CARDS */}
+      {/* SUMMARY CARDS (PERMUKAAN ABU-ABU LEMBUT 30%) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Total Pengadaan
             </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-2xs">
               <Wallet className="w-5 h-5" />
             </div>
           </div>
@@ -578,45 +578,45 @@ export default function PurchasePage() {
             <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
               Rp {summary.totalSpent.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Dari {summary.totalPurchases} nota kulakan tercatat
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Sudah Dibayar
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center shadow-2xs">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-emerald-600 tracking-tight font-mono">
+            <div className="text-2xl font-black text-emerald-700 tracking-tight font-mono">
               Rp {summary.totalPaid.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Kas riil keluar untuk modal kulakan
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Tanggungan Hutang Supplier
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 flex items-center justify-center shadow-2xs">
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-rose-600 tracking-tight font-mono">
+            <div className="text-2xl font-black text-rose-700 tracking-tight font-mono">
               Rp {summary.totalDebt.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Total kewajiban tempo pembayaran
             </p>
           </div>
@@ -624,12 +624,12 @@ export default function PurchasePage() {
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200/90 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Cari nama supplier atau catatan..."
-            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            className="pl-10 pr-8 h-10 bg-white border-gray-300 text-sm font-medium rounded-xl text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-gray-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -656,8 +656,8 @@ export default function PurchasePage() {
                 onClick={() => setStatusFilter(item.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                   isSelected
-                    ? "bg-[#2563EB] text-white shadow-xs"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gray-900 text-white shadow-xs"
+                    : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
                 }`}
               >
                 {item.label}
@@ -668,26 +668,26 @@ export default function PurchasePage() {
       </div>
 
       {/* TABEL DATA KULAKAN */}
-      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
+      <div className="border border-gray-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+            <TableRow className="bg-[#F4F5F7] border-b border-gray-200 hover:bg-[#F4F5F7]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Tanggal
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Supplier & Kontak
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Jumlah Barang
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-right">
                 Total Tagihan
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center">
                 Status
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[110px]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center w-[110px]">
                 Aksi
               </TableHead>
             </TableRow>
@@ -696,7 +696,7 @@ export default function PurchasePage() {
             {isFetching ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16 text-gray-400">
-                  <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <div className="w-8 h-8 border-3 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="font-bold text-gray-700 text-sm">
                     Memuat riwayat kulakan...
                   </p>
@@ -712,7 +712,7 @@ export default function PurchasePage() {
                 return (
                   <TableRow
                     key={p.id}
-                    className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
+                    className="hover:bg-[#F8F9FA] border-b border-gray-100 transition-colors"
                   >
                     <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
                       {new Date(p.entryDate).toLocaleDateString("id-ID", {
@@ -732,7 +732,7 @@ export default function PurchasePage() {
                       )}
                     </TableCell>
                     <TableCell className="py-3.5 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F4F5F7] text-gray-700 border border-gray-200">
                         {p.purchaseItems.length} Produk ({totalItemQty} pcs)
                       </span>
                     </TableCell>
@@ -759,7 +759,7 @@ export default function PurchasePage() {
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => handleEditClick(p)}
-                          className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+                          className="p-2 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-950 transition-colors"
                           title="Edit Faktur"
                         >
                           <Pencil className="w-4 h-4" />

@@ -255,14 +255,14 @@ export default function SalesPage() {
         </div>
       </div>
 
-      {/* SUMMARY CARDS */}
+      {/* SUMMARY CARDS (PERMUKAAN ABU-ABU LEMBUT 30%) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Total Penjualan Kotor
             </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-2xs">
               <Wallet className="w-5 h-5" />
             </div>
           </div>
@@ -270,45 +270,45 @@ export default function SalesPage() {
             <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
               Rp {summary.totalRevenue.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Dari {summary.totalTransactions} transaksi tercatat
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Kas Diterima (Lunas / DP)
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center shadow-2xs">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-emerald-600 tracking-tight font-mono">
+            <div className="text-2xl font-black text-emerald-700 tracking-tight font-mono">
               Rp {summary.totalPaid.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Arus uang masuk nyata dari kasir
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Piutang / Sisa Belum Bayar
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 flex items-center justify-center shadow-2xs">
               <Clock className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-rose-600 tracking-tight font-mono">
+            <div className="text-2xl font-black text-rose-700 tracking-tight font-mono">
               Rp {summary.totalDue.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Sisa kekurangan pembayaran pelanggan
             </p>
           </div>
@@ -316,12 +316,12 @@ export default function SalesPage() {
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200/90 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Cari No. Nota atau Pelanggan..."
-            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            className="pl-10 pr-8 h-10 bg-white border-gray-300 text-sm font-medium rounded-xl text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-gray-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -354,8 +354,8 @@ export default function SalesPage() {
                 onClick={() => setStatusFilter(item.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                   isSelected
-                    ? "bg-[#2563EB] text-white shadow-xs"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-gray-900 text-white shadow-xs"
+                    : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
                 }`}
               >
                 {item.label}
@@ -366,26 +366,26 @@ export default function SalesPage() {
       </div>
 
       {/* TABEL DATA TRANSAKSI */}
-      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
+      <div className="border border-gray-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+            <TableRow className="bg-[#F4F5F7] border-b border-gray-200 hover:bg-[#F4F5F7]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Waktu & Tanggal
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 No. Invoice
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Pelanggan
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-right">
                 Total Tagihan
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center">
                 Status
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[110px]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center w-[110px]">
                 Aksi
               </TableHead>
             </TableRow>
@@ -394,7 +394,7 @@ export default function SalesPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16 text-gray-400">
-                  <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <div className="w-8 h-8 border-3 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="font-bold text-gray-700 text-sm">
                     Memuat riwayat penjualan...
                   </p>
@@ -404,7 +404,7 @@ export default function SalesPage() {
               filteredSales.map((sale) => (
                 <TableRow
                   key={sale.id}
-                  className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
+                  className="hover:bg-[#F8F9FA] border-b border-gray-100 transition-colors"
                 >
                   <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
                     {new Date(sale.createdAt).toLocaleDateString("id-ID", {
@@ -415,7 +415,7 @@ export default function SalesPage() {
                       minute: "2-digit",
                     })}
                   </TableCell>
-                  <TableCell className="py-3.5 px-4 font-mono font-bold text-sm text-[#2563EB]">
+                  <TableCell className="py-3.5 px-4 font-mono font-bold text-sm text-gray-900">
                     {sale.invoiceNumber}
                   </TableCell>
                   <TableCell className="py-3.5 px-4">
@@ -432,7 +432,7 @@ export default function SalesPage() {
                     <div className="font-black text-sm text-gray-950 font-mono">
                       Rp {sale.finalAmount.toLocaleString("id-ID")}
                     </div>
-                    <span className="text-[10px] font-semibold text-gray-400">
+                    <span className="text-[10px] font-semibold text-gray-500">
                       {sale.paymentMethod || "Tunai"}
                     </span>
                   </TableCell>
@@ -446,7 +446,7 @@ export default function SalesPage() {
                           setSelectedSale(sale);
                           setIsModalOpen(true);
                         }}
-                        className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+                        className="p-2 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-950 transition-colors"
                         title="Lihat Rincian Nota"
                       >
                         <Eye className="w-4 h-4" />
@@ -481,10 +481,10 @@ export default function SalesPage() {
 
       {/* MODAL DETAIL NOTA */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto bg-white text-gray-900 border border-gray-200 shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-600" />
+            <DialogTitle className="text-xl font-black text-gray-900 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-gray-900" />
               <span>Detail Nota: {selectedSale?.invoiceNumber}</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-500">
@@ -495,9 +495,9 @@ export default function SalesPage() {
           {selectedSale && (
             <div className="space-y-5 pt-2">
               {/* Info Pelanggan & Waktu */}
-              <div className="grid grid-cols-2 gap-4 bg-gray-50/80 p-4 rounded-2xl border border-gray-200 text-sm">
+              <div className="grid grid-cols-2 gap-4 bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200 text-sm">
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5" /> Pelanggan
                   </p>
                   <p className="font-black text-gray-900 text-base">
@@ -508,7 +508,7 @@ export default function SalesPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" /> Waktu Transaksi
                   </p>
                   <p className="font-bold text-gray-800 text-sm">
@@ -528,23 +528,23 @@ export default function SalesPage() {
                 <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Daftar Barang yang Dibeli
                 </h4>
-                <div className="border border-gray-200 rounded-2xl overflow-hidden">
+                <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white">
                   <Table>
-                    <TableHeader className="bg-gray-50">
-                      <TableRow>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700">Produk</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-center">Qty</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-right">Harga Satuan</TableHead>
-                        <TableHead className="py-2.5 px-3 text-xs font-bold text-gray-700 text-right">Subtotal</TableHead>
+                    <TableHeader className="bg-[#F4F5F7]">
+                      <TableRow className="border-b border-gray-200">
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800">Produk</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 text-center">Qty</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 text-right">Harga Satuan</TableHead>
+                        <TableHead className="py-2.5 px-3 text-xs font-black text-gray-800 text-right">Subtotal</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {selectedSale.saleItems.map((item) => (
-                        <TableRow key={item.id} className="border-b border-gray-100">
+                        <TableRow key={item.id} className="border-b border-gray-100 hover:bg-[#F8F9FA]">
                           <TableCell className="py-3 px-3">
                             <div className="flex items-center gap-1.5 flex-wrap">
                               {item.product.brand && (
-                                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-800 border border-gray-200">
                                   {item.product.brand}
                                 </span>
                               )}
@@ -553,12 +553,12 @@ export default function SalesPage() {
                               </span>
                             </div>
                             {item.product.isService && (
-                              <span className="inline-block mt-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
+                              <span className="inline-block mt-0.5 text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md">
                                 Jasa / Servis
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="py-3 px-3 text-center font-bold text-sm text-gray-700 font-mono">
+                          <TableCell className="py-3 px-3 text-center font-bold text-sm text-gray-800 font-mono">
                             {item.quantity}
                           </TableCell>
                           <TableCell className="py-3 px-3 text-right text-xs font-medium text-gray-600 font-mono">
@@ -576,10 +576,10 @@ export default function SalesPage() {
 
               {/* Rincian Pembayaran */}
               <div className="flex justify-end">
-                <div className="w-72 bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-2 text-sm">
+                <div className="w-72 bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200 space-y-2 text-sm">
                   <div className="flex justify-between text-gray-600 text-xs">
                     <span>Subtotal Barang:</span>
-                    <span className="font-mono font-semibold">
+                    <span className="font-mono font-semibold text-gray-900">
                       Rp {selectedSale.totalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
@@ -591,7 +591,7 @@ export default function SalesPage() {
                   </div>
                   <div className="flex justify-between font-black text-base border-t border-gray-200 pt-2 text-gray-950">
                     <span>Total Akhir:</span>
-                    <span className="text-[#2563EB] font-mono">
+                    <span className="text-gray-950 font-mono">
                       Rp {selectedSale.finalAmount.toLocaleString("id-ID")}
                     </span>
                   </div>
@@ -620,7 +620,7 @@ export default function SalesPage() {
                         <Button
                           type="button"
                           onClick={() => handleSettleDebt(selectedSale.id)}
-                          className="w-full h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                          className="w-full h-9 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-1.5"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Lunasi Sisa Rp {selectedSale.dueAmount.toLocaleString("id-ID")}</span>
@@ -643,7 +643,7 @@ export default function SalesPage() {
               )}
 
               {/* Tombol aksi modal */}
-              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+              <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                 <Button
                   variant="ghost"
                   className="rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold"
@@ -653,7 +653,7 @@ export default function SalesPage() {
                   Batalkan Transaksi (Void)
                 </Button>
                 <Button
-                  className="rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold px-5"
+                  className="rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-5"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Tutup

@@ -46,6 +46,16 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-mozza-canvas: #FFFFFF;
+  --color-mozza-canvas-subtle: #F8F9FA;
+  --color-mozza-surface: #F3F4F6;
+  --color-mozza-surface-hover: #EAECEF;
+  --color-mozza-border: #E5E7EB;
+  --color-mozza-border-hover: #D1D5DB;
+  --color-mozza-ink: #111827;
+  --color-mozza-ink-muted: #6B7280;
+  --color-mozza-carbon: #18181B;
+  --color-mozza-carbon-hover: #09090B;
 }
 
 :root {

@@ -382,16 +382,16 @@ export default function ProductPage() {
               resetForm();
               setIsProductModalOpen(true);
             }}
-            className="h-11 px-5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold shadow-md shadow-blue-500/25 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
+            className="h-11 px-5 rounded-xl bg-gray-900 hover:bg-black text-white font-extrabold shadow-md shadow-black/20 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Tambah Produk Baru</span>
           </Button>
 
-          <DialogContent className="sm:max-w-[520px] rounded-3xl p-6">
+          <DialogContent className="sm:max-w-[520px] rounded-3xl p-6 bg-white text-gray-900 border border-gray-200 shadow-xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-600" />
+              <DialogTitle className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-gray-900" />
                 <span>
                   {editingProductId ? "Ubah Data Produk" : "Tambah Produk Baru"}
                 </span>
@@ -414,7 +414,7 @@ export default function ProductPage() {
                     placeholder="Misal: Kandila, Takari, Agaru"
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    className="h-10 text-sm rounded-xl font-medium"
+                    className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -426,7 +426,7 @@ export default function ProductPage() {
                     placeholder="Misal: ECO-103, Floating M, Guppy"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-10 text-sm rounded-xl font-medium"
+                    className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                     required
                   />
                 </div>
@@ -440,7 +440,7 @@ export default function ProductPage() {
                   <button
                     type="button"
                     onClick={() => setIsCategoryModalOpen(true)}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs font-bold text-gray-900 hover:underline flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
                     Kategori Baru
@@ -451,12 +451,12 @@ export default function ProductPage() {
                   onValueChange={(val) => setCategoryId(val || "")}
                   required
                 >
-                  <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full">
+                  <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Pilih Kategori Produk">
                       {categories.find((cat) => String(cat.id) === categoryId)?.name}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white text-gray-900 border-gray-200">
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
                         {cat.name}
@@ -478,7 +478,7 @@ export default function ProductPage() {
                     placeholder="Contoh: 15000"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="h-10 text-sm rounded-xl font-bold font-mono"
+                    className="h-10 text-sm rounded-xl font-bold font-mono bg-white border-gray-300 text-gray-900"
                     required
                   />
                 </div>
@@ -493,7 +493,7 @@ export default function ProductPage() {
                     placeholder="Contoh: 5"
                     value={minStock}
                     onChange={(e) => setMinStock(e.target.value)}
-                    className="h-10 text-sm rounded-xl font-bold font-mono"
+                    className="h-10 text-sm rounded-xl font-bold font-mono bg-white border-gray-300 text-gray-900"
                     required
                   />
                 </div>
@@ -508,18 +508,18 @@ export default function ProductPage() {
                   placeholder="Catatan pakan, watt mesin, atau garansi"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="h-10 text-sm rounded-xl font-medium"
+                  className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                 />
               </div>
 
               {/* TOGGLE JASA / LAYANAN & STATUS AKTIF */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <label className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-200 cursor-pointer hover:bg-gray-100/70 transition-colors">
+                <label className="flex items-center gap-3 p-3 rounded-2xl bg-[#F4F5F7] border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
                   <input
                     type="checkbox"
                     checked={isService}
                     onChange={(e) => setIsService(e.target.checked)}
-                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    className="w-4 h-4 rounded text-gray-900 focus:ring-gray-900"
                   />
                   <div>
                     <span className="text-xs font-bold text-gray-900 block">Jasa / Layanan</span>
@@ -528,7 +528,7 @@ export default function ProductPage() {
                 </label>
 
                 {editingProductId && (
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 border border-gray-200">
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-[#F4F5F7] border border-gray-200">
                     <div>
                       <span className="text-xs font-bold text-gray-900 block">Status Produk</span>
                       <span className="text-[11px] text-gray-500 font-medium">Aktif untuk dijual</span>
@@ -539,7 +539,7 @@ export default function ProductPage() {
                       className={`px-3 py-1 rounded-xl text-xs font-extrabold transition-all ${
                         isActive
                           ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                          : "bg-gray-200 text-gray-600 border border-gray-300"
+                          : "bg-gray-200 text-gray-700 border border-gray-300"
                       }`}
                     >
                       {isActive ? "Aktif" : "Nonaktif"}
@@ -548,11 +548,11 @@ export default function ProductPage() {
                 )}
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-xl h-10 px-4 text-xs font-bold"
+                  className="rounded-xl h-10 px-4 text-xs font-bold border-gray-300 text-gray-700 hover:bg-gray-100"
                   onClick={() => setIsProductModalOpen(false)}
                 >
                   Batal
@@ -560,7 +560,7 @@ export default function ProductPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="rounded-xl h-10 px-5 bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs"
+                  className="rounded-xl h-10 px-5 bg-gray-900 hover:bg-black text-white font-black text-xs shadow-md shadow-black/20"
                 >
                   {isLoading
                     ? "Menyimpan..."
@@ -576,10 +576,10 @@ export default function ProductPage() {
 
       {/* MODAL KATEGORI BARU */}
       <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
-        <DialogContent className="sm:max-w-[420px] rounded-3xl p-6">
+        <DialogContent className="sm:max-w-[420px] rounded-3xl p-6 bg-white text-gray-900 border border-gray-200 shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-              <Tag className="w-4 h-4 text-blue-600" />
+            <DialogTitle className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <Tag className="w-4 h-4 text-gray-900" />
               <span>Tambah Kategori Baru</span>
             </DialogTitle>
           </DialogHeader>
@@ -590,15 +590,15 @@ export default function ProductPage() {
                 placeholder="Misal: Tanaman, Pakan, Filter, Hardscape"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
-                className="h-10 text-sm rounded-xl font-medium"
+                className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                 required
               />
             </div>
-            <div className="flex justify-end gap-2 pt-2 border-t">
+            <div className="flex justify-end gap-2 pt-2 border-t border-gray-200">
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-xl text-xs font-bold"
+                className="rounded-xl text-xs font-bold border-gray-300 text-gray-700 hover:bg-gray-100"
                 onClick={() => setIsCategoryModalOpen(false)}
               >
                 Batal
@@ -606,7 +606,7 @@ export default function ProductPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold"
+                className="rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-black shadow-xs"
               >
                 {isLoading ? "Menyimpan..." : "Simpan Kategori"}
               </Button>
@@ -615,14 +615,14 @@ export default function ProductPage() {
         </DialogContent>
       </Dialog>
 
-      {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+      {/* FILTER & SEARCH BAR (SURFACE ABU-ABU LEMBUT) */}
+      <div className="bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200/90 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         {/* SEARCH INPUT */}
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Cari model atau merk..."
-            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            className="pl-10 pr-8 h-10 bg-white border-gray-300 text-sm font-medium rounded-xl text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-gray-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -641,15 +641,15 @@ export default function ProductPage() {
           {/* FILTER MERK DROPDOWN */}
           {availableBrands.length > 0 && (
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-xs font-bold text-gray-400 hidden sm:inline">Merk:</span>
+              <span className="text-xs font-bold text-gray-500 hidden sm:inline">Merk:</span>
               <Select
                 value={selectedBrandFilter}
                 onValueChange={(val) => setSelectedBrandFilter(val || "all")}
               >
-                <SelectTrigger className="h-9 text-xs font-extrabold rounded-xl w-[130px] bg-gray-50 border-gray-200">
+                <SelectTrigger className="h-9 text-xs font-black rounded-xl w-[130px] bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Semua Merk" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white text-gray-900 border-gray-200">
                   <SelectItem value="all">Semua Merk</SelectItem>
                   <SelectItem value="no-brand">Tanpa Merk</SelectItem>
                   {availableBrands.map((b) => (
@@ -668,8 +668,8 @@ export default function ProductPage() {
               onClick={() => setSelectedCategory("all")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedCategory === "all"
-                  ? "bg-[#2563EB] text-white shadow-xs"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-gray-900 text-white shadow-xs"
+                  : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -684,8 +684,8 @@ export default function ProductPage() {
                   onClick={() => setSelectedCategory(String(cat.id))}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                     isSelected
-                      ? "bg-[#2563EB] text-white shadow-xs"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-gray-900 text-white shadow-xs"
+                      : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
                   }`}
                 >
                   {cat.name}
@@ -697,41 +697,41 @@ export default function ProductPage() {
       </div>
 
       {/* TABEL MASTER PRODUK */}
-      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
+      <div className="border border-gray-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
+            <TableRow className="bg-[#F4F5F7] border-b border-gray-200 hover:bg-[#F4F5F7]">
               <TableHead
                 onClick={() => handleSort("name")}
-                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+                className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase cursor-pointer select-none hover:text-gray-950 transition-colors"
               >
                 Nama / Model {renderSortIcon("name")}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("brand")}
-                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+                className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase cursor-pointer select-none hover:text-gray-950 transition-colors"
               >
                 Merk {renderSortIcon("brand")}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("category")}
-                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase cursor-pointer select-none hover:text-blue-600 transition-colors"
+                className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase cursor-pointer select-none hover:text-gray-950 transition-colors"
               >
                 Kategori {renderSortIcon("category")}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("price")}
-                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right cursor-pointer select-none hover:text-blue-600 transition-colors"
+                className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-right cursor-pointer select-none hover:text-gray-950 transition-colors"
               >
                 Harga Jual {renderSortIcon("price")}
               </TableHead>
               <TableHead
                 onClick={() => handleSort("stock")}
-                className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center cursor-pointer select-none hover:text-blue-600 transition-colors"
+                className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center cursor-pointer select-none hover:text-gray-950 transition-colors"
               >
                 Sisa Stok {renderSortIcon("stock")}
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[120px]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center w-[120px]">
                 Aksi
               </TableHead>
             </TableRow>
@@ -741,7 +741,7 @@ export default function ProductPage() {
               filteredProducts.map((product) => (
                 <TableRow
                   key={product.id}
-                  className="hover:bg-blue-50/40 border-b border-gray-100 transition-colors"
+                  className="hover:bg-[#F8F9FA] border-b border-gray-100 transition-colors"
                 >
                   <TableCell className="py-3.5 px-4">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -749,12 +749,12 @@ export default function ProductPage() {
                         {product.name}
                       </span>
                       {product.isService && (
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300">
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
                           Jasa
                         </span>
                       )}
                       {product.isActive === false && (
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 border border-gray-300">
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
                           Nonaktif
                         </span>
                       )}
@@ -767,8 +767,8 @@ export default function ProductPage() {
                   </TableCell>
                   <TableCell className="py-3.5 px-4">
                     {product.brand ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-black bg-blue-50 text-blue-700 border border-blue-200">
-                        <Tag className="w-3 h-3 text-blue-600" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">
+                        <Tag className="w-3 h-3 text-gray-600" />
                         {product.brand}
                       </span>
                     ) : (
@@ -778,7 +778,7 @@ export default function ProductPage() {
                     )}
                   </TableCell>
                   <TableCell className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F4F5F7] text-gray-700 border border-gray-200">
                       {product.category?.name || "Umum"}
                     </span>
                   </TableCell>
@@ -787,7 +787,7 @@ export default function ProductPage() {
                   </TableCell>
                   <TableCell className="py-3.5 px-4 text-center">
                     {product.isService ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
                         Jasa (∞)
                       </span>
                     ) : (
@@ -795,9 +795,9 @@ export default function ProductPage() {
                         <span
                           className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-black font-mono border ${
                             (product.stock ?? 0) <= 0
-                              ? "bg-rose-100 text-rose-800 border-rose-300"
+                              ? "bg-rose-50 text-rose-700 border-rose-200"
                               : (product.stock ?? 0) <= product.minStock
-                                ? "bg-amber-100 text-amber-900 border-amber-300 font-extrabold"
+                                ? "bg-amber-50 text-amber-800 border-amber-200 font-extrabold"
                                 : "bg-emerald-50 text-emerald-700 border-emerald-200"
                           }`}
                         >
@@ -815,7 +815,7 @@ export default function ProductPage() {
                     <div className="flex items-center justify-center gap-1.5">
                       <button
                         onClick={() => handleEditClick(product)}
-                        className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+                        className="p-2 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-950 transition-colors"
                         title="Edit Produk"
                       >
                         <Pencil className="w-4 h-4" />
@@ -835,7 +835,7 @@ export default function ProductPage() {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16 text-gray-400">
                   <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
-                  <p className="font-bold text-gray-700 text-base">
+                  <p className="font-bold text-gray-800 text-base">
                     Tidak ada produk ditemukan
                   </p>
                   <p className="text-xs text-gray-500 mt-1">

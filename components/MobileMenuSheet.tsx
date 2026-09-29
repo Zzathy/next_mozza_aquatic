@@ -105,22 +105,16 @@ export default function MobileMenuSheet({ isOpen, onClose }: MobileMenuSheetProp
       />
 
       {/* BOTTOM SHEET CONTAINER */}
-      <div className="fixed bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-[32px] shadow-2xl border-t border-gray-100 flex flex-col z-50 overflow-hidden animate-in slide-in-from-bottom duration-300 pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed bottom-0 left-0 right-0 max-h-[85vh] bg-white text-gray-900 rounded-t-[32px] shadow-2xl border-t border-gray-200 flex flex-col z-50 overflow-hidden animate-in slide-in-from-bottom duration-300 pb-[env(safe-area-inset-bottom)]">
         {/* DRAG HANDLE BAR */}
         <div className="pt-3 pb-2 flex justify-center">
           <div className="w-12 h-1.5 rounded-full bg-gray-300" />
         </div>
 
         {/* SHEET HEADER & USER PROFILE CARD */}
-        <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/70 flex items-center justify-between">
+        <div className="px-5 py-3 border-b border-gray-200 bg-[#F8F9FA] flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div
-              className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs ${
-                role === "Owner"
-                  ? "bg-purple-600 text-white"
-                  : "bg-blue-600 text-white"
-              }`}
-            >
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 shadow-xs bg-gray-900 text-white">
               {role === "Owner" ? <ShieldCheck className="w-5 h-5" /> : <User className="w-5 h-5" />}
             </div>
             <div className="min-w-0">
@@ -129,7 +123,7 @@ export default function MobileMenuSheet({ isOpen, onClose }: MobileMenuSheetProp
               </h3>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
                   {role} Toko
                 </span>
               </div>
@@ -174,22 +168,22 @@ export default function MobileMenuSheet({ isOpen, onClose }: MobileMenuSheetProp
                     onClick={onClose}
                     className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between gap-3 active:scale-95 ${
                       isActive
-                        ? "bg-blue-50/80 border-[#2563EB] shadow-xs"
-                        : "bg-white border-gray-200/80 hover:border-gray-300 hover:bg-gray-50"
+                        ? "bg-gray-900 border-gray-900 shadow-xs text-white"
+                        : "bg-[#F4F5F7] border-gray-200/90 hover:border-gray-400 hover:bg-white text-gray-900"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-xs ${app.color}`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-xs ${isActive ? "bg-white text-gray-900" : "bg-white text-gray-800 border border-gray-200"}`}>
                         <Icon className="w-5 h-5 stroke-[2.2]" />
                       </div>
-                      <ChevronRight className={`w-4 h-4 ${isActive ? "text-blue-600" : "text-gray-300"}`} />
+                      <ChevronRight className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-400"}`} />
                     </div>
 
                     <div>
-                      <h4 className="font-extrabold text-sm text-gray-900 leading-tight">
+                      <h4 className={`font-extrabold text-sm leading-tight ${isActive ? "text-white" : "text-gray-950"}`}>
                         {app.name}
                       </h4>
-                      <p className="text-[11px] font-medium text-gray-400 line-clamp-1 mt-0.5">
+                      <p className={`text-[11px] font-medium line-clamp-1 mt-0.5 ${isActive ? "text-gray-300" : "text-gray-500"}`}>
                         {app.desc}
                       </p>
                     </div>
@@ -199,9 +193,9 @@ export default function MobileMenuSheet({ isOpen, onClose }: MobileMenuSheetProp
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200/80 text-center">
-            <p className="text-xs font-bold text-gray-700">Mozza Aquatic Banyuwangi</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">POS & Store Management Web-App</p>
+          <div className="p-3.5 rounded-2xl bg-[#F4F5F7] border border-gray-200 text-center">
+            <p className="text-xs font-bold text-gray-900">Mozza Aquatic Banyuwangi</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">Aquascape Studio & Fish Store</p>
           </div>
         </div>
       </div>

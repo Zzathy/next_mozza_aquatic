@@ -81,13 +81,13 @@ export default function AppSidebar({ onCloseMobile }: AppSidebarProps) {
   });
 
   return (
-    <aside className="w-64 lg:w-20 xl:w-64 h-full bg-white border-r border-gray-200 text-gray-800 flex flex-col justify-between shrink-0 select-none shadow-[2px_0_8px_rgba(0,0,0,0.02)] transition-all duration-300">
+    <aside className="w-64 lg:w-20 xl:w-64 h-full bg-[#F8F9FA] border-r border-gray-200 text-gray-800 flex flex-col justify-between shrink-0 select-none shadow-[2px_0_8px_rgba(0,0,0,0.02)] transition-all duration-300">
       <div>
-        {/* LOGO BRANDING */}
-        <div className="h-20 flex items-center justify-center xl:justify-start gap-3 px-3 xl:px-4 border-b border-gray-100 bg-white">
-          <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-gray-200 bg-black shrink-0 shadow-xs">
+        {/* LOGO BRANDING MONOKROM */}
+        <div className="h-20 flex items-center justify-center xl:justify-start gap-3 px-3 xl:px-4 border-b border-gray-200 bg-white">
+          <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-gray-300 bg-black shrink-0 shadow-xs">
             <Image
-              src="/mozza_logo.png"
+              src="/mozza_logo_bw.png"
               alt="Mozza Aquatic"
               fill
               sizes="44px"
@@ -96,10 +96,10 @@ export default function AppSidebar({ onCloseMobile }: AppSidebarProps) {
             />
           </div>
           <div className="hidden xl:block min-w-0">
-            <h1 className="text-sm font-extrabold text-gray-950 leading-tight tracking-tight truncate">
+            <h1 className="text-sm font-black text-gray-950 leading-tight tracking-tight truncate">
               Mozza Aquatic
             </h1>
-            <p className="text-[11px] font-semibold text-gray-400 tracking-wide truncate">
+            <p className="text-[11px] font-bold text-gray-500 tracking-wide truncate">
               Aquascape & Fish Store
             </p>
           </div>
@@ -129,8 +129,8 @@ export default function AppSidebar({ onCloseMobile }: AppSidebarProps) {
                 title={item.name}
                 className={`flex items-center justify-center xl:justify-start gap-3 px-2.5 xl:px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group ${
                   isActive
-                    ? "bg-[#2563EB] text-white shadow-sm shadow-blue-500/20"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-gray-900 text-white shadow-xs"
+                    : "text-gray-600 hover:bg-gray-200/80 hover:text-gray-900"
                 }`}
               >
                 <Icon
@@ -144,26 +144,22 @@ export default function AppSidebar({ onCloseMobile }: AppSidebarProps) {
       </div>
 
       {/* USER PROFILE & LOGOUT */}
-      <div className="p-2.5 xl:p-3.5 border-t border-gray-100 bg-gray-50/80 space-y-2">
+      <div className="p-2.5 xl:p-3.5 border-t border-gray-200 bg-white space-y-2">
         {/* Profile Tag */}
         <div
-          className="flex items-center justify-center xl:justify-start gap-2.5 p-1.5 xl:px-2 xl:py-1.5 rounded-xl bg-white border border-gray-200/80 shadow-2xs"
+          className="flex items-center justify-center xl:justify-start gap-2.5 p-1.5 xl:px-2 xl:py-1.5 rounded-xl bg-[#F3F4F6] border border-gray-200 shadow-2xs"
           title={`${userName} (${role})`}
         >
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
-            role === "Owner"
-              ? "bg-purple-100 text-purple-700 border border-purple-200"
-              : "bg-blue-100 text-blue-700 border border-blue-200"
-          }`}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 bg-gray-900 text-white shadow-2xs">
             {role === "Owner" ? <ShieldAlert className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
           </div>
           <div className="hidden xl:block min-w-0 flex-1">
-            <p className="text-xs font-extrabold text-gray-900 truncate">
+            <p className="text-xs font-black text-gray-900 truncate">
               {userName}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`inline-block w-1.5 h-1.5 rounded-full ${role === "Owner" ? "bg-purple-500" : "bg-emerald-500"}`} />
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-900" />
+              <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">
                 {role}
               </span>
             </div>

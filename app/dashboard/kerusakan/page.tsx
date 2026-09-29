@@ -214,16 +214,16 @@ export default function DamageLogPage() {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <Button
             onClick={() => setIsModalOpen(true)}
-            className="h-11 px-5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold shadow-md shadow-rose-500/25 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
+            className="h-11 px-5 rounded-xl bg-gray-900 hover:bg-black text-white font-extrabold shadow-md shadow-black/20 active:scale-95 transition-all self-start sm:self-auto flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Catat Barang Rusak / Mati</span>
           </Button>
 
-          <DialogContent className="sm:max-w-[460px] rounded-3xl p-6">
+          <DialogContent className="sm:max-w-[460px] rounded-3xl p-6 bg-white text-gray-900 border border-gray-200 shadow-xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-rose-600" />
+              <DialogTitle className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-gray-900" />
                 <span>Catat Barang Rusak / Mati</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
@@ -239,7 +239,7 @@ export default function DamageLogPage() {
                   onValueChange={(val) => setSelectedProductId(val || "")}
                   required
                 >
-                  <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full">
+                  <SelectTrigger className="h-10 text-sm rounded-xl font-medium w-full bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Pilih produk yang rusak/mati">
                       {(() => {
                         const p = products.find((prod) => String(prod.id) === selectedProductId);
@@ -247,7 +247,7 @@ export default function DamageLogPage() {
                       })()}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white text-gray-900 border-gray-200">
                     {products.map((p) => (
                       <SelectItem key={p.id} value={String(p.id)}>
                         {p.brand ? `[${p.brand}] ` : ""}{p.name} (Tersedia: {p.stock})
@@ -256,7 +256,7 @@ export default function DamageLogPage() {
                   </SelectContent>
                 </Select>
                 {selectedProductObj && (
-                  <p className="text-[11px] font-semibold text-blue-600 flex items-center gap-1">
+                  <p className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
                     <Info className="w-3 h-3" /> Stok saat ini di gudang: {selectedProductObj.stock} pcs
                   </p>
                 )}
@@ -274,7 +274,7 @@ export default function DamageLogPage() {
                   placeholder="Misal: 2"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
-                  className="h-10 text-sm rounded-xl font-bold font-mono"
+                  className="h-10 text-sm rounded-xl font-bold font-mono bg-white border-gray-300 text-gray-900"
                   required
                 />
               </div>
@@ -289,15 +289,15 @@ export default function DamageLogPage() {
                   placeholder="Misal: Pecah saat unboxing, ikan mati adaptasi suhu"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="h-10 text-sm rounded-xl font-medium"
+                  className="h-10 text-sm rounded-xl font-medium bg-white border-gray-300 text-gray-900"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-xl h-10 px-4 text-xs font-bold"
+                  className="rounded-xl h-10 px-4 text-xs font-bold border-gray-300 text-gray-700 hover:bg-gray-100"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Batal
@@ -305,7 +305,7 @@ export default function DamageLogPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting || !selectedProductId}
-                  className="rounded-xl h-10 px-5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+                  className="rounded-xl h-10 px-5 bg-gray-900 hover:bg-black text-white font-black text-xs shadow-md shadow-black/20"
                 >
                   {isSubmitting ? "Menyimpan..." : "Simpan Laporan"}
                 </Button>
@@ -315,41 +315,41 @@ export default function DamageLogPage() {
         </Dialog>
       </div>
 
-      {/* SUMMARY CARDS */}
+      {/* SUMMARY CARDS (PERMUKAAN ABU-ABU LEMBUT 30%) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Total Beban Kerugian
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 flex items-center justify-center shadow-2xs">
               <Wallet className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-rose-600 tracking-tight font-mono">
+            <div className="text-2xl font-black text-rose-700 tracking-tight font-mono">
               Rp {summary.totalLoss.toLocaleString("id-ID")}
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Akumulasi kerugian dari barang rusak / ikan mati
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border-2 border-gray-200/90 shadow-xs">
+        <div className="bg-[#F4F5F7] p-5 rounded-2xl border border-gray-200/90 shadow-2xs hover:border-gray-400 hover:bg-white hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-gray-500">
               Total Barang Rusak / Mati
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gray-200 text-gray-800 border border-gray-300 flex items-center justify-center shadow-2xs">
               <PackageX className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-black text-gray-900 tracking-tight font-mono">
+            <div className="text-2xl font-black text-gray-950 tracking-tight font-mono">
               {summary.damagedItemsCount} Pcs
             </div>
-            <p className="text-xs font-semibold text-gray-400 mt-1">
+            <p className="text-xs font-semibold text-gray-500 mt-1">
               Total fisik ikan mati atau barang pecah
             </p>
           </div>
@@ -357,12 +357,12 @@ export default function DamageLogPage() {
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-4 rounded-2xl border-2 border-gray-200/90 shadow-xs flex items-center justify-between gap-3">
+      <div className="bg-[#F4F5F7] p-4 rounded-2xl border border-gray-200/90 shadow-2xs flex items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Cari nama produk, merk, atau catatan..."
-            className="pl-10 pr-8 h-10 bg-gray-50 border-gray-300 text-sm font-medium rounded-xl focus-visible:bg-white"
+            className="pl-10 pr-8 h-10 bg-white border-gray-300 text-sm font-medium rounded-xl text-gray-900 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-gray-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -378,26 +378,26 @@ export default function DamageLogPage() {
       </div>
 
       {/* TABEL DATA KERUSAKAN */}
-      <div className="border-2 border-gray-200/90 rounded-2xl bg-white shadow-xs overflow-hidden">
+      <div className="border border-gray-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/80 border-b border-gray-200 hover:bg-gray-50/80">
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+            <TableRow className="bg-[#F4F5F7] border-b border-gray-200 hover:bg-[#F4F5F7]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Tanggal
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Produk
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center">
                 Jumlah
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-right">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-right">
                 Beban Kerugian
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase">
                 Keterangan
               </TableHead>
-              <TableHead className="py-3.5 px-4 text-xs font-extrabold text-gray-700 uppercase text-center w-[80px]">
+              <TableHead className="py-3.5 px-4 text-xs font-black text-gray-700 uppercase text-center w-[80px]">
                 Aksi
               </TableHead>
             </TableRow>
@@ -406,7 +406,7 @@ export default function DamageLogPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16 text-gray-400">
-                  <div className="w-8 h-8 border-3 border-rose-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <div className="w-8 h-8 border-3 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="font-bold text-gray-700 text-sm">
                     Memuat laporan kerusakan...
                   </p>
@@ -416,7 +416,7 @@ export default function DamageLogPage() {
               filteredLogs.map((log) => (
                 <TableRow
                   key={log.id}
-                  className="hover:bg-rose-50/30 border-b border-gray-100 transition-colors"
+                  className="hover:bg-[#F8F9FA] border-b border-gray-100 transition-colors"
                 >
                   <TableCell className="py-3.5 px-4 text-xs font-semibold text-gray-600 font-mono">
                     {new Date(log.createdAt).toLocaleDateString("id-ID", {
@@ -428,7 +428,7 @@ export default function DamageLogPage() {
                   <TableCell className="py-3.5 px-4">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {log.product.brand && (
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-800 border border-gray-200">
                           {log.product.brand}
                         </span>
                       )}
@@ -461,7 +461,7 @@ export default function DamageLogPage() {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16 text-gray-400">
                   <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
-                  <p className="font-bold text-gray-700 text-base">
+                  <p className="font-bold text-gray-800 text-base">
                     Tidak ada laporan kerusakan ditemukan
                   </p>
                   <p className="text-xs text-gray-500 mt-1">

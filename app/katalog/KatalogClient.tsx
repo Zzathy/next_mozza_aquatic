@@ -15,11 +15,11 @@ import {
   Wrench,
   Utensils,
 } from "lucide-react";
-import KatalogNavbar from "./KatalogNavbar";
+import PublicNavbar from "@/components/PublicNavbar";
 import ProductCard from "./ProductCard";
 import ProductDetailModal from "./ProductDetailModal";
 import WishlistDrawer from "./WishlistDrawer";
-import StoreInfoModal from "./StoreInfoModal";
+import StoreInfoModal from "@/components/StoreInfoModal";
 import { CatalogCategory, CatalogProduct, StockFilter, SortOption } from "./types";
 
 interface KatalogClientProps {
@@ -402,7 +402,7 @@ export default function KatalogClient({
   return (
     <div className="min-h-screen bg-[#fbfbfb] text-zinc-900 selection:bg-zinc-200 selection:text-zinc-950">
       {/* Navbar */}
-      <KatalogNavbar
+      <PublicNavbar
         savedCount={savedIds.length}
         onOpenWishlist={() => setIsWishlistOpen(true)}
         onOpenStoreInfo={() => setIsStoreInfoOpen(true)}

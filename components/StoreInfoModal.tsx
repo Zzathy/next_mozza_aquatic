@@ -49,7 +49,7 @@ export default function StoreInfoModal({
                 <h3 className="text-lg font-bold text-zinc-950">Mozza Aquatic</h3>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               </div>
-              <p className="text-xs text-zinc-500">Aquascape & Ornamental Fish Gallery</p>
+              <p className="text-xs text-zinc-500">Aquascape &amp; Ornamental Fish Gallery</p>
             </div>
           </div>
           <button
@@ -86,7 +86,7 @@ export default function StoreInfoModal({
           <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80">
             <Phone className="w-5 h-5 text-zinc-500 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-zinc-900">Kontak & Pemesanan</p>
+              <p className="font-semibold text-zinc-900">Kontak &amp; Pemesanan</p>
               <p className="text-zinc-600 mt-0.5 leading-relaxed">
                 WhatsApp: +62 812-3456-7890 (Layanan Fast Respon)
               </p>
@@ -111,11 +111,11 @@ export default function StoreInfoModal({
             </li>
             <li className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Peralatan Aquascape & Co2
+              Peralatan Aquascape &amp; Co2
             </li>
             <li className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Konsultasi & Setting Tank
+              Konsultasi &amp; Setting Tank
             </li>
           </ul>
         </div>

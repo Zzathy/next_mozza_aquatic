@@ -65,6 +65,12 @@ export default function KatalogNavbar({
           >
             Katalog Stok
           </Link>
+          <Link
+            href="/panduan"
+            className="px-4 py-1.5 rounded-full text-xs font-medium text-zinc-600 hover:text-zinc-950 transition-colors"
+          >
+            Panduan
+          </Link>
           <button
             type="button"
             onClick={onOpenStoreInfo}
